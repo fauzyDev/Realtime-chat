@@ -13,6 +13,7 @@ import {
 import { ColorModeToggle } from "@/components/ui/color-mode";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "./ui/button";
+import Sidebar from "./Sidebar";
 
 interface User {
   id: number;
@@ -40,6 +41,7 @@ const Chat: React.FC = () => {
     { id: 2, senderId: 2, receiverId: null, text: "Hi Alice!", timestamp: "10:01 AM" },
     { id: 3, senderId: 2, receiverId: -1, text: "Hey, are you free?", timestamp: "10:02 AM" },
     { id: 4, senderId: -1, receiverId: 2, text: "Yes, what's up?", timestamp: "10:03 AM" },
+    { id: 5, senderId: -1, receiverId: 1, text: "Hello Alice, how are you?", timestamp: "1:03 PM" },
   ]);
 
   const [currentUser, setCurrentUser] = React.useState<User | null>(null); // User yang sedang di-chat
@@ -75,14 +77,27 @@ const Chat: React.FC = () => {
       {/* Header */}
       <Flex justify="space-between" align="center" p={4} shadow="lg" rounded="md" mb={4}>
         <Text fontSize="xl" fontWeight="bold">
-          Realtime Chat {currentUser ? `- Chat with ${currentUser.name}` : "- All Chat"}
+          {currentUser ? `Realtime Chat` : "Realtime - All Chat"}
         </Text>
+        {currentUser && (
+      <HStack gap={4}>
+        <Avatar name={currentUser.name} src={currentUser.avatar} size="sm" />
+        <VStack align="start" gap={0}>
+          <Text fontSize="sm" fontWeight="bold">
+            {currentUser.name}
+          </Text>
+          <Badge colorPalette ={currentUser.status === "online" ? "green" : "yellow"}>
+            {currentUser.status}
+          </Badge>
+        </VStack>
+      </HStack>
+    )}
         <ColorModeToggle />
       </Flex>
 
       <Flex flex="1" direction="row">
         {/* Sidebar */}
-        <Box w="30%" p={4} shadow="lg" rounded="md" mr={4}>
+        {/* <Box w="30%" p={4} shadow="lg" rounded="md" mr={4}>
           <VStack align="stretch">
             {users.map((user) => (
               <HStack
@@ -106,7 +121,8 @@ const Chat: React.FC = () => {
               All Chat
             </Button>
           </VStack>
-        </Box>
+        </Box> */}
+        <Sidebar users={users} currentUser={currentUser} setCurrentUser={setCurrentUser} />
 
         {/* Chat Area */}
         <Flex flex="1" direction="column" p={4} shadow="lg" rounded="md">
