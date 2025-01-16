@@ -75,17 +75,16 @@ const Chat: React.FC = () => {
     : messages.filter((msg) => msg.receiverId === null); // All-chat
 
   return (
+    <>
     <Flex direction="column" w="100vw" h="100vh" p={4}>
       {/* Header */}
       <Flex justify="space-between" align="center" p={4} shadow="lg" rounded="md" mb={4}>
         <Button
           display={{ base: "block", md: "none" }} // Hanya muncul di perangkat kecil
           size="sm">
-          <Hamburger size={24} onToggle={() => setSidebarOpen(true)} />
+          <Hamburger size={24} toggled={isSidebarOpen} toggle={setSidebarOpen}/>
           </Button>
-        <Text fontSize="xl" fontWeight="bold">
-          {currentUser ?  ( <Text display={{ base: "block" }}>Realtime Chat</Text> ) : "Realtime - All Chat"}
-        </Text>
+          {currentUser ? ( <Text fontSize="xl" display={{ base: "none", md: "block" }} fontWeight="bold">Realtime Chat</Text> ) : ( <Text fontSize="xl" fontWeight="bold">Realtime - All Chat</Text> )}
         {currentUser && (
       <HStack gap={4}>
         <Avatar name={currentUser.name} src={currentUser.avatar} size="sm" />
@@ -158,6 +157,7 @@ const Chat: React.FC = () => {
         </Flex>
       </Flex>
     </Flex>
+    </>
   );
 };
 

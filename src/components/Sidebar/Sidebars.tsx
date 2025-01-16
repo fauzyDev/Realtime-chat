@@ -42,8 +42,8 @@ const Sidebars: React.FC<SidebarProps> = ({ users, currentUser, setCurrentUser, 
     <>
       {/* Sidebar untuk Desktop */}
       <Box display={{ base: "none", md: "block" }} w="25%" p={4} shadow="lg" rounded="md" mr={4}>
-      <VStack align="stretch">
-        {users.map((user) => (
+        <VStack align="stretch">
+          {users.map((user) => (
         <HStack key={user.id}
           gap={4}
           p={2}
@@ -54,7 +54,7 @@ const Sidebars: React.FC<SidebarProps> = ({ users, currentUser, setCurrentUser, 
         <Box>
         <Text fontWeight="bold">{user.name}</Text>
           <Badge colorPalette={user.status === "online" ? "green" : "yellow"}>
-              {user.status}
+            {user.status}
           </Badge>
         </Box>
         </HStack>
@@ -62,10 +62,14 @@ const Sidebars: React.FC<SidebarProps> = ({ users, currentUser, setCurrentUser, 
         <Button onClick={() => setCurrentUser(null)} mt={4} w="full" bg="blue" color="white" fontWeight="semibold">
             All Chat
           </Button>
-         </VStack>
-        </Box>
+          <Button onClick={() => null} bg="gray.500" color="white" fontWeight="semibold">
+                  Login
+                </Button>
+        </VStack>
+      </Box>
 
       {/* Sidebar untuk Mobile (Drawer) */}
+      {isOpen && (
       <HStack wrap="wrap">
         <For each={["start"]}>
           {(placement) => (
@@ -76,7 +80,7 @@ const Sidebars: React.FC<SidebarProps> = ({ users, currentUser, setCurrentUser, 
                 <DrawerTitle fontWeight="semibold">Realtime Chat</DrawerTitle>
               </DrawerHeader>
               <DrawerBody>
-                <VStack align="stretch" gap={4}>
+                <VStack align="stretch" gap={4} onClick={onClose}>
                   {users.map((user) => (
                     <HStack key={user.id}
                     gap={4}
@@ -97,6 +101,9 @@ const Sidebars: React.FC<SidebarProps> = ({ users, currentUser, setCurrentUser, 
                 <Button onClick={() => setCurrentUser(null)} mt={4} w="full" bg="blue" color="white" fontWeight="semibold">
                   All Chat
                 </Button>
+                <Button onClick={() => null} bg="gray.500" color="white" fontWeight="semibold">
+                  Login
+                </Button>
                 </VStack>
               </DrawerBody>
               <DrawerCloseTrigger />
@@ -105,6 +112,7 @@ const Sidebars: React.FC<SidebarProps> = ({ users, currentUser, setCurrentUser, 
           )}
         </For>
       </HStack>
+      )}
     </>
   );
 };

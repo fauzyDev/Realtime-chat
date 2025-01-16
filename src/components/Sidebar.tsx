@@ -22,8 +22,13 @@ const Sidebars = dynamic<SidebarProps>(() => import("@/components/Sidebar/Sideba
 
 const Sidebar: React.FC<SidebarProps> = ({ users, currentUser, setCurrentUser, isOpen, onClose, onOpen }) => {
   return (
-    <Sidebars users={users} currentUser={currentUser} setCurrentUser={setCurrentUser} isOpen={isOpen} onClose={onClose} onOpen={onOpen} /> 
-  )
-}
+    <Sidebars users={users} 
+      currentUser={currentUser} 
+      setCurrentUser={setCurrentUser} 
+      isOpen={isOpen} 
+      onClose={onClose} 
+      onOpen={onOpen} /> 
+    )
+  }
 
 export default Sidebar
