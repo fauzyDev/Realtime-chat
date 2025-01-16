@@ -34,6 +34,8 @@ interface Message {
 const users: User[] = [
   { id: 1, name: "Alice", avatar: "https://i.pravatar.cc/150?img=1", status: "online" },
   { id: 2, name: "Bob", avatar: "https://i.pravatar.cc/150?img=2", status: "mengetik..." },
+  { id: 3, name: "Sandi", avatar: "https://i.pravatar.cc/150?img=2", status: "mengetik..." },
+  { id: 4, name: "Maya", avatar: "https://i.pravatar.cc/150?img=2", status: "offline" },
 ];
 
 const Chat: React.FC = () => {
@@ -92,7 +94,7 @@ const Chat: React.FC = () => {
           <Text fontSize="sm" fontWeight="bold">
             {currentUser.name}
           </Text>
-          <Badge colorPalette ={currentUser.status === "online" ? "green" : "yellow"}>
+          <Badge colorPalette={currentUser.status === "online" ? "green" : "yellow"}>
             {currentUser.status}
           </Badge>
         </VStack>

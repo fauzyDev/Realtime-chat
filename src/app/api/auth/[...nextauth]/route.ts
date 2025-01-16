@@ -1,5 +1,5 @@
 import NextAuth from "next-auth"
-import Github from "next-auth/providers/github";
+import Google from "next-auth/providers/google";
 import type { NextAuthOptions } from "next-auth"
 
 const clientId: string = process.env.GOOGLE_ID ?? "";
@@ -7,7 +7,7 @@ const clientSecret: string = process.env.GOOGLE_SECRET ?? "";
 
 export const authOptions: NextAuthOptions = {
     providers: [
-        Github({
+        Google({
             clientId,
             clientSecret 
         })

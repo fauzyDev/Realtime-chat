@@ -63,9 +63,9 @@ const Sidebars: React.FC<SidebarProps> = ({ users, currentUser, setCurrentUser, 
         <Button onClick={() => setCurrentUser(null)} mt={4} w="full" bg="blue" color="white" fontWeight="semibold">
             All Chat
           </Button>
-          <Link href="/api/auth/signin" className="bg-slate-500 font-semibold">
-                  Login
-                </Link>
+          <Link href="/api/auth/signin" className="bg-slate-600 font-semibold px-4 py-2 text-center">
+            Login
+          </Link>
         </VStack>
       </Box>
 
@@ -102,12 +102,12 @@ const Sidebars: React.FC<SidebarProps> = ({ users, currentUser, setCurrentUser, 
                 <Button onClick={() => setCurrentUser(null)} mt={4} w="full" bg="blue" color="white" fontWeight="semibold">
                   All Chat
                 </Button>
-                <Button onClick={() => null} bg="gray.500" color="white" fontWeight="semibold">
-                  Login
-                </Button>
+                <Link href="/api/auth/signin" className="bg-slate-600 font-semibold px-4 py-2 text-center">
+                    Login
+                  </Link>
                 </VStack>
               </DrawerBody>
-              <DrawerCloseTrigger />
+              <DrawerCloseTrigger/>
             </DrawerContent>
           </DrawerRoot>
           )}
