@@ -20,6 +20,7 @@ import {
 } from "../ui/drawer";
 import { Avatar } from "../ui/avatar";
 import { Button } from "../ui/button";
+import Link from "next/link";
 
 interface User {
   id: number;
@@ -62,9 +63,9 @@ const Sidebars: React.FC<SidebarProps> = ({ users, currentUser, setCurrentUser, 
         <Button onClick={() => setCurrentUser(null)} mt={4} w="full" bg="blue" color="white" fontWeight="semibold">
             All Chat
           </Button>
-          <Button onClick={() => null} bg="gray.500" color="white" fontWeight="semibold">
+          <Link href="/api/auth/signin" className="bg-slate-500 font-semibold">
                   Login
-                </Button>
+                </Link>
         </VStack>
       </Box>
 
