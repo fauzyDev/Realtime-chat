@@ -43,6 +43,11 @@ const Sidebars: React.FC<SidebarProps> = ({ users, currentUser, setCurrentUser, 
     <>
       {/* Sidebar untuk Desktop */}
       <Box display={{ base: "none", md: "block" }} w="25%" p={4} shadow="lg" rounded="md" mr={4}>
+        <Button bg="green" w="full" fontWeight="semibold" mb={4}>
+          Chat Baru
+        </Button>
+
+        <Text fontWeight="semibold">History Chat</Text>
         <VStack align="stretch">
           {users.map((user) => (
         <HStack key={user.id}

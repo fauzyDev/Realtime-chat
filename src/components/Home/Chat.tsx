@@ -113,20 +113,26 @@ const Chat: React.FC = () => {
             {filteredMessages.length > 0 ? (
               filteredMessages.map((message) => {
                 const sender = message.senderId === -1
-                  ? { name: "You", avatar: "" }
+                  ? { name: "You", avatar: "null" }
                   : users.find((u) => u.id === message.senderId) || { name: "Unknown", avatar: "" };
 
                 return (
-                  <Box key={message.id} p={3} rounded="md" shadow="lg">
+                  <HStack key={message.id} align="start" gap={3} p={3} rounded="md" shadow="lg">
+                  {/* Avatar di sebelah kiri */}
+                  <Avatar name={sender.name} src={sender.avatar} size="sm" />
+
+                  {/* Konten pesan */}
+                  <Box>
                     <Text fontSize="sm" fontWeight="bold">
                       {sender.name}{" "}
-                      <Text as="span" fontWeight="normal" color="gray.500">
-                        ({message.timestamp})
-                      </Text>
+                    <Text as="span" fontWeight="normal" color="gray.500">
+                      ({message.timestamp})
                     </Text>
-                    <Text>{message.text}</Text>
-                  </Box>
-                );
+                  </Text>
+                <Text>{message.text}</Text>
+              </Box>
+              </HStack>
+              );
               })
             ) : (
               <Text>Tidak ada pesan silahkan kirm pesan</Text>
