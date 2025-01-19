@@ -22,6 +22,7 @@ import { Avatar } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { LuMessageCirclePlus } from "react-icons/lu";
 import { FiMessageSquare } from "react-icons/fi";
+import SelectUser from "../Modal/SelectUser";
 import Link from "next/link";
 
 interface User {
@@ -61,10 +62,11 @@ const Sidebars: React.FC<SidebarProps> = ({ users, messages, currentUser, setCur
     <>
       {/* Sidebar untuk Desktop */}
       <Box display={{ base: "none", md: "block" }} w="25%" p={4} shadow="lg" rounded="md" mr={4}>
-        <Button bg="green" color="white" w="full" fontWeight="semibold" mb={4}>
+        {/* <Button bg="green" color="white" w="full" fontWeight="semibold" mb={4}>
         <LuMessageCirclePlus />
           Chat Baru
-        </Button>
+        </Button> */}
+        <SelectUser onUserSelect={users}/>
 
         <Text fontWeight="semibold" mb="3">History Chat</Text>
         <VStack align="stretch">

@@ -142,7 +142,9 @@ const Chat: React.FC = () => {
           {/* Message Input */}
           <Flex mt={4} shadow="sm">
             <Input
-              variant="flushed"
+              p={4}
+              variant="outline" 
+              css={{ "--focus-color": "lime" }}
               placeholder={`ketik Pesan ${currentUser ? `ke ${currentUser.name}` : "ke Semua"}`}
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
