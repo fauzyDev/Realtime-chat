@@ -30,9 +30,16 @@ interface User {
   avatar: string; 
   status: string; 
 }
-
+interface Message {
+  id: number;
+  senderId: number;
+  receiverId: number | null; // Null untuk all-chat
+  text: string;
+  timestamp: string;
+}
 interface SidebarProps {
   users: User[];
+  messages: Message[];
   currentUser: User | null;
   setCurrentUser: (user: User | null) => void;
   isOpen: boolean; 
@@ -40,7 +47,16 @@ interface SidebarProps {
   onOpen: () => void;
 }
 
-const Sidebars: React.FC<SidebarProps> = ({ users, currentUser, setCurrentUser, isOpen, onClose, onOpen }) => {
+const Sidebars: React.FC<SidebarProps> = ({ users, messages, currentUser, setCurrentUser, isOpen, onClose, onOpen }) => {
+  // Filter user dengan history chat
+  const chatHistory = users.filter((user) =>
+    messages.some(
+      (msg) =>
+        (msg.senderId === user.id && msg.receiverId === -1) || // Pesan dari user ke "You"
+        (msg.senderId === -1 && msg.receiverId === user.id)    // Pesan dari "You" ke user
+    )
+  );
+
   return (
     <>
       {/* Sidebar untuk Desktop */}
@@ -50,9 +66,9 @@ const Sidebars: React.FC<SidebarProps> = ({ users, currentUser, setCurrentUser, 
           Chat Baru
         </Button>
 
-        <Text fontWeight="semibold">History Chat</Text>
+        <Text fontWeight="semibold" mb="3">History Chat</Text>
         <VStack align="stretch">
-          {users.map((user) => (
+          {chatHistory.map((user) => (
         <HStack key={user.id}
           gap={4}
           p={2}
@@ -87,9 +103,15 @@ const Sidebars: React.FC<SidebarProps> = ({ users, currentUser, setCurrentUser, 
             <DrawerBackdrop />
             <DrawerContent>
               <DrawerHeader>
-                <DrawerTitle fontWeight="semibold">Realtime Chat</DrawerTitle>
+                <DrawerTitle fontWeight="semibold" fontSize="xl">Realtime Chat</DrawerTitle>
               </DrawerHeader>
               <DrawerBody>
+              <Button bg="green" color="white" w="full" fontWeight="semibold" mb={4}>
+                <LuMessageCirclePlus />
+                  Chat Baru
+              </Button>
+
+        <Text fontWeight="semibold" mb="3">History Chat</Text>
                 <VStack align="stretch" gap={4} onClick={onClose}>
                   {users.map((user) => (
                     <HStack key={user.id}

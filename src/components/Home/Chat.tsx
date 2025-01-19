@@ -34,8 +34,8 @@ interface Message {
 const users: User[] = [
   { id: 1, name: "Alice", avatar: "https://i.pravatar.cc/150?img=1", status: "online" },
   { id: 2, name: "Bob", avatar: "https://i.pravatar.cc/150?img=2", status: "mengetik..." },
-  { id: 3, name: "Sandi", avatar: "https://i.pravatar.cc/150?img=2", status: "mengetik..." },
-  { id: 4, name: "Maya", avatar: "https://i.pravatar.cc/150?img=2", status: "offline" },
+  { id: 3, name: "Sandi", avatar: "https://i.pravatar.cc/150?img=2", status: "online" },
+  { id: 4, name: "Maya", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
 ];
 
 const Chat: React.FC = () => {
@@ -105,7 +105,7 @@ const Chat: React.FC = () => {
 
       <Flex flex="1" direction="row">
         {/* Sidebar */}
-        <Sidebar users={users} currentUser={currentUser} setCurrentUser={setCurrentUser} isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} onOpen={() => setSidebarOpen(true)}/>
+        <Sidebar users={users} messages={messages} currentUser={currentUser} setCurrentUser={setCurrentUser} isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} onOpen={() => setSidebarOpen(true)}/>
 
         {/* Chat Area */}
         <Flex flex="1" direction="column" p={4} shadow="lg" rounded="md">
