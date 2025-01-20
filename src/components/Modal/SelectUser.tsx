@@ -1,8 +1,8 @@
 import React from "react";
 import {
   DialogRoot,
-  DialogBackdrop,
   DialogTrigger,
+  DialogActionTrigger,
   DialogContent,
   DialogCloseTrigger,
   DialogHeader,
@@ -10,7 +10,7 @@ import {
   DialogBody,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { HStack, Text } from "@chakra-ui/react";
+import { HStack, Box, Badge, Text } from "@chakra-ui/react";
 import { Avatar } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { LuMessageCirclePlus } from "react-icons/lu";
@@ -29,7 +29,7 @@ interface ModalProps {
 
 const SelectUser: React.FC<ModalProps> = ({ users, onUserSelect }) => {
   return (
-    <DialogRoot>
+    <DialogRoot scrollBehavior="inside" size="xs">
       {/* Trigger untuk membuka modal */}
       <DialogTrigger asChild>        
         <Button bg="green" color="white" w="full" fontWeight="semibold" mb={4}>
@@ -39,13 +39,8 @@ const SelectUser: React.FC<ModalProps> = ({ users, onUserSelect }) => {
       </DialogTrigger>
 
       {/* Modal Konten */}
-      <DialogBackdrop />
       <DialogContent>
-        <DialogCloseTrigger asChild>
-          <Button position="absolute" top="4" right="4" size="sm">
-            X
-          </Button>
-        </DialogCloseTrigger>
+        <DialogCloseTrigger asChild/>
 
         <DialogHeader>
           <DialogTitle>Pilih User</DialogTitle>
@@ -54,24 +49,28 @@ const SelectUser: React.FC<ModalProps> = ({ users, onUserSelect }) => {
         <DialogBody>
           {/* Daftar user */}
           {users.map((user) => (
-            <HStack
+            <HStack 
               key={user.id}
               gap={4}
               p={2}
               rounded="md"
-              _hover={{ bg: "gray.100", cursor: "pointer" }}
-              onClick={() => onUserSelect(user)}
-            >
+              _hover={{ bg: "gray.300", cursor: "pointer", color: "black" }}
+              onClick={() => onUserSelect(user)}>
               <Avatar name={user.name} src={user.avatar} />
+            <Box>
               <Text fontWeight="bold">{user.name}</Text>
+                <Badge colorPalette={user.status === "online" ? "green" : "yellow"}>
+                  {user.status}
+                </Badge>
+              </Box>
             </HStack>
           ))}
         </DialogBody>
 
         <DialogFooter>
-          <Button variant="ghost" onClick={() => console.log("Batal")}>
-            Batal
-          </Button>
+        <DialogActionTrigger asChild>
+            <Button bg="red.600" px={4} fontWeight="semibold" fontSize="md">Batal</Button>
+          </DialogActionTrigger>
         </DialogFooter>
       </DialogContent>
     </DialogRoot>

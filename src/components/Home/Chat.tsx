@@ -14,7 +14,8 @@ import { ColorModeToggle } from "@/components/ui/color-mode";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
 import { Spin as Hamburger } from 'hamburger-react'
-import Sidebar from "../Sidebar";
+import { LuSendHorizontal } from "react-icons/lu";
+import Sidebars from "../Sidebar/Sidebars";
 import SelectUser from "../Modal/SelectUser";
 
 interface User {
@@ -37,6 +38,12 @@ const users: User[] = [
   { id: 2, name: "Bob", avatar: "https://i.pravatar.cc/150?img=2", status: "mengetik..." },
   { id: 3, name: "Sandi", avatar: "https://i.pravatar.cc/150?img=2", status: "online" },
   { id: 4, name: "Maya", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
+  { id: 5, name: "Maya", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
+  { id: 6, name: "Maya", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
+  { id: 7, name: "Maya", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
+  { id: 8, name: "Maya", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
+  { id: 9, name: "Maya", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
+  { id: 10, name: "Maya", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
 ];
 
 const Chat: React.FC = () => {
@@ -105,12 +112,18 @@ const Chat: React.FC = () => {
         </VStack>
       </HStack>
       )}
-      <ColorModeToggle />
+        <ColorModeToggle />
       </Flex>
 
       <Flex flex="1" direction="row">
         {/* Sidebar */}
-        <Sidebar users={users} messages={messages} modal={<SelectUser users={users} onUserSelect={handleUserSelect}/>} currentUser={currentUser} setCurrentUser={setCurrentUser} isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} onOpen={() => setSidebarOpen(true)}/>
+        <Sidebars users={users} 
+          messages={messages} 
+          modal={<SelectUser users={users} onUserSelect={handleUserSelect}/>} 
+          currentUser={currentUser} 
+          setCurrentUser={setCurrentUser} 
+          isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} 
+          onOpen={() => setSidebarOpen(true)}/>
 
         {/* Chat Area */}
         <Flex flex="1" direction="column" p={4} shadow="lg" rounded="md">
@@ -145,7 +158,7 @@ const Chat: React.FC = () => {
           </VStack>
 
           {/* Message Input */}
-          <Flex mt={4} shadow="sm">
+          <Flex mt={4} shadow="sm" align="center" justify="center">
             <Input
               p={4}
               variant="outline" 
@@ -155,18 +168,17 @@ const Chat: React.FC = () => {
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
             />
+
             <Button
               ml={2}
-              px={4}
-              py={2}
+              px={3}
               variant="solid"
               bg="blue.500"
               color="white"
               rounded="md"
               _hover={{ bg: "blue.600" }}
-              onClick={sendMessage}
-            >
-              Send
+              onClick={sendMessage}>
+                <LuSendHorizontal /> Send
             </Button>
           </Flex>
         </Flex>
