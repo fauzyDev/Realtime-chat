@@ -19,19 +19,15 @@ interface User {
   id: number;
   name: string;
   avatar: string;
+  status: string;
 }
 
-const users: User[] = [
-  { id: 1, name: "Alice", avatar: "https://i.pravatar.cc/150?img=1" },
-  { id: 2, name: "Bob", avatar: "https://i.pravatar.cc/150?img=2" },
-  { id: 3, name: "Charlie", avatar: "https://i.pravatar.cc/150?img=3" },
-];
+interface ModalProps {
+  users: User[];
+  onUserSelect: (user: User) => void;
+}
 
-const SelectUser: React.FC<{ onUserSelect: (user: User) => void }> = ({ onUserSelect }) => {
-  const handleUserClick = (user: User) => {
-    onUserSelect(user); // Pilih user
-  };
-
+const SelectUser: React.FC<ModalProps> = ({ users, onUserSelect }) => {
   return (
     <DialogRoot>
       {/* Trigger untuk membuka modal */}
@@ -64,7 +60,7 @@ const SelectUser: React.FC<{ onUserSelect: (user: User) => void }> = ({ onUserSe
               p={2}
               rounded="md"
               _hover={{ bg: "gray.100", cursor: "pointer" }}
-              onClick={() => handleUserClick(user)}
+              onClick={() => onUserSelect(user)}
             >
               <Avatar name={user.name} src={user.avatar} />
               <Text fontWeight="bold">{user.name}</Text>

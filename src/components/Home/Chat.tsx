@@ -15,6 +15,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
 import { Spin as Hamburger } from 'hamburger-react'
 import Sidebar from "../Sidebar";
+import SelectUser from "../Modal/SelectUser";
 
 interface User {
   id: number;
@@ -50,6 +51,10 @@ const Chat: React.FC = () => {
   const [currentUser, setCurrentUser] = React.useState<User | null>(null); // User yang sedang di-chat
   const [newMessage, setNewMessage] = React.useState<string>("");
   const [isSidebarOpen, setSidebarOpen] = React.useState<boolean>(false);
+
+  const handleUserSelect = (user: User): void => {
+    setCurrentUser(user); // Simpan user yang dipilih
+  };
 
   // Fungsi untuk mengirim pesan
   const sendMessage = () => {
@@ -105,7 +110,7 @@ const Chat: React.FC = () => {
 
       <Flex flex="1" direction="row">
         {/* Sidebar */}
-        <Sidebar users={users} messages={messages} currentUser={currentUser} setCurrentUser={setCurrentUser} isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} onOpen={() => setSidebarOpen(true)}/>
+        <Sidebar users={users} messages={messages} modal={<SelectUser users={users} onUserSelect={handleUserSelect}/>} currentUser={currentUser} setCurrentUser={setCurrentUser} isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} onOpen={() => setSidebarOpen(true)}/>
 
         {/* Chat Area */}
         <Flex flex="1" direction="column" p={4} shadow="lg" rounded="md">

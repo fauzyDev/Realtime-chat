@@ -24,14 +24,16 @@ interface SidebarProps {
   isOpen: boolean; 
   onClose: () => void; 
   onOpen: () => void;
+  modal: React.ReactNode
 }
 
 const Sidebars = dynamic<SidebarProps>(() => import("@/components/Sidebar/Sidebars"), { ssr: false })
 
-const Sidebar: React.FC<SidebarProps> = ({ users, messages, currentUser, setCurrentUser, isOpen, onClose, onOpen }) => {
+const Sidebar: React.FC<SidebarProps> = ({ users, messages, currentUser, modal, setCurrentUser, isOpen, onClose, onOpen }) => {
   return (
     <Sidebars users={users}
-      messages={messages} 
+      messages={messages}
+      modal={modal}
       currentUser={currentUser} 
       setCurrentUser={setCurrentUser} 
       isOpen={isOpen} 

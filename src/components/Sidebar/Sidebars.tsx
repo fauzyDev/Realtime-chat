@@ -22,7 +22,6 @@ import { Avatar } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { LuMessageCirclePlus } from "react-icons/lu";
 import { FiMessageSquare } from "react-icons/fi";
-import SelectUser from "../Modal/SelectUser";
 import Link from "next/link";
 
 interface User {
@@ -46,9 +45,10 @@ interface SidebarProps {
   isOpen: boolean; 
   onClose: () => void; 
   onOpen: () => void;
+  modal: React.ReactNode
 }
 
-const Sidebars: React.FC<SidebarProps> = ({ users, messages, currentUser, setCurrentUser, isOpen, onClose, onOpen }) => {
+const Sidebars: React.FC<SidebarProps> = ({ users, messages, currentUser, modal, setCurrentUser, isOpen, onClose, onOpen }) => {
   // Filter user dengan history chat
   const chatHistory = users.filter((user) =>
     messages.some(
@@ -62,11 +62,7 @@ const Sidebars: React.FC<SidebarProps> = ({ users, messages, currentUser, setCur
     <>
       {/* Sidebar untuk Desktop */}
       <Box display={{ base: "none", md: "block" }} w="25%" p={4} shadow="lg" rounded="md" mr={4}>
-        {/* <Button bg="green" color="white" w="full" fontWeight="semibold" mb={4}>
-        <LuMessageCirclePlus />
-          Chat Baru
-        </Button> */}
-        <SelectUser onUserSelect={users}/>
+        {modal}
 
         <Text fontWeight="semibold" mb="3">History Chat</Text>
         <VStack align="stretch">
