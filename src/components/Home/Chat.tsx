@@ -48,9 +48,9 @@ const Chat: React.FC = () => {
   const [messages, setMessages] = React.useState<Message[]>([
     { id: 1, senderId: 1, receiverId: null, text: "Hello, everyone!", timestamp: "10:00 AM" },
     { id: 2, senderId: 2, receiverId: null, text: "Hi Alice!", timestamp: "10:01 AM" },
-    { id: 3, senderId: 2, receiverId: -1, text: "Hey, are you free?", timestamp: "10:02 AM" },
-    { id: 4, senderId: -1, receiverId: 2, text: "Yes, what's up?", timestamp: "10:03 AM" },
-    { id: 5, senderId: -1, receiverId: 1, text: "Hello Alice, how are you?", timestamp: "1:03 PM" },
+    // { id: 3, senderId: 2, receiverId: -1, text: "Hey, are you free?", timestamp: "10:02 AM" },
+    // { id: 4, senderId: -1, receiverId: 2, text: "Yes, what's up?", timestamp: "10:03 AM" },
+    // { id: 5, senderId: -1, receiverId: 1, text: "Hello Alice, how are you?", timestamp: "1:03 PM" },
   ]);
 
   const [newMessage, setNewMessage] = React.useState<string>("");
