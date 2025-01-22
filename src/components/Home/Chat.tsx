@@ -8,13 +8,11 @@ import {
   Text,
   VStack,
   HStack,
-  Badge,
 } from "@chakra-ui/react";
-import { ColorModeToggle } from "@/components/ui/color-mode";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
-import { Spin as Hamburger } from 'hamburger-react'
 import { LuSendHorizontal } from "react-icons/lu";
+import Header from "../Header/Header";
 import Sidebars from "../Sidebar/Sidebars";
 import SelectUser from "../Modal/SelectUser";
 
@@ -37,12 +35,12 @@ const users: User[] = [
   { id: 1, name: "Alice", avatar: "https://i.pravatar.cc/150?img=1", status: "online" },
   { id: 2, name: "Bob", avatar: "https://i.pravatar.cc/150?img=2", status: "mengetik..." },
   { id: 3, name: "Sandi", avatar: "https://i.pravatar.cc/150?img=2", status: "online" },
-  { id: 4, name: "Maya", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
-  { id: 5, name: "Maya", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
-  { id: 6, name: "Maya", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
-  { id: 7, name: "Maya", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
-  { id: 8, name: "Maya", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
-  { id: 9, name: "Maya", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
+  { id: 4, name: "Luna", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
+  { id: 5, name: "Milda", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
+  { id: 6, name: "Sarah", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
+  { id: 7, name: "Nanda", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
+  { id: 8, name: "Alya", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
+  { id: 9, name: "Linda", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
   { id: 10, name: "Maya", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
 ];
 
@@ -55,8 +53,8 @@ const Chat: React.FC = () => {
     { id: 5, senderId: -1, receiverId: 1, text: "Hello Alice, how are you?", timestamp: "1:03 PM" },
   ]);
 
-  const [currentUser, setCurrentUser] = React.useState<User | null>(null); // User yang sedang di-chat
   const [newMessage, setNewMessage] = React.useState<string>("");
+  const [currentUser, setCurrentUser] = React.useState<User | null>(null); // User yang sedang di-chat
   const [isSidebarOpen, setSidebarOpen] = React.useState<boolean>(false);
 
   const handleUserSelect = (user: User): void => {
@@ -71,7 +69,11 @@ const Chat: React.FC = () => {
         senderId: -1, // -1 untuk "You"
         receiverId: currentUser?.id || null,
         text: newMessage,
-        timestamp: new Date().toLocaleTimeString(),
+        timestamp: new Date().toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false
+        }),
       };
 
       setMessages((prev) => [...prev, newMsg]); // Menambahkan pesan baru ke daftar
@@ -92,28 +94,7 @@ const Chat: React.FC = () => {
     <>
     <Flex direction="column" w="100vw" h="100vh" p={4}>
       {/* Header */}
-      <Flex justify="space-between" align="center" p={4} shadow="lg" rounded="md" mb={4}>
-        <Button
-          display={{ base: "block", md: "none" }} // Hanya muncul di perangkat kecil
-          size="sm">
-          <Hamburger size={24} toggled={isSidebarOpen} toggle={setSidebarOpen}/>
-          </Button>
-          {currentUser ? ( <Text fontSize="xl" display={{ base: "none", md: "block" }} fontWeight="bold">Realtime Chat</Text> ) : ( <Text fontSize="xl" fontWeight="bold">Realtime - All Chat</Text> )}
-        {currentUser && (
-      <HStack gap={4}>
-        <Avatar name={currentUser.name} src={currentUser.avatar} size="sm" />
-        <VStack align="start" gap={0}>
-          <Text fontSize="sm" fontWeight="bold">
-            {currentUser.name}
-          </Text>
-          <Badge colorPalette={currentUser.status === "online" ? "green" : "yellow"}>
-            {currentUser.status}
-          </Badge>
-        </VStack>
-      </HStack>
-      )}
-        <ColorModeToggle />
-      </Flex>
+      <Header currentUser={currentUser} isSidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen}/>
 
       <Flex flex="1" direction="row">
         {/* Sidebar */}
@@ -126,8 +107,8 @@ const Chat: React.FC = () => {
           onOpen={() => setSidebarOpen(true)}/>
 
         {/* Chat Area */}
-        <Flex flex="1" direction="column" p={4} shadow="lg" rounded="md">
-          <VStack align="stretch" flex="1" overflowY="auto">
+        <Flex flex="1" direction="column" shadow="lg" rounded="md">
+          <VStack align="stretch" flex="1" overflowY="auto" p={4} gap={4}>
             {filteredMessages.length > 0 ? (
               filteredMessages.map((message) => {
                 const sender = message.senderId === -1
