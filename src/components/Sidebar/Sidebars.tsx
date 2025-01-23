@@ -111,7 +111,7 @@ const Sidebars: React.FC<SidebarProps> = ({ users, messages, currentUser, modal,
                   Chat Baru
               </Button>
 
-        <Text fontWeight="semibold" mb="3">History Chat</Text>
+              <Text fontWeight="semibold" mb="3">History Chat</Text>
                 <VStack align="stretch" gap={4} onClick={onClose}>
                   {users.map((user) => (
                     <HStack key={user.id}

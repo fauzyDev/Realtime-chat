@@ -26,7 +26,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ currentUser, isSidebarOpen, setSidebarOpen }) => {
   return (
-    <Flex justify="space-between" align="center" p={4} shadow="lg" rounded="md" mb={4}>
+    <Flex as="header" justify="space-between" align="center" p={4} shadow="lg" rounded="md" mb={4}>
       <Button
         display={{ base: "block", md: "none" }} // Hanya muncul di perangkat kecil
         size="sm">

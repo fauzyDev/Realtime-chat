@@ -91,12 +91,11 @@ const Chat: React.FC = () => {
     : messages.filter((msg) => msg.receiverId === null); // All-chat
 
   return (
-    <>
-    <Flex direction="column" w="100vw" h="100vh" p={4}>
+    <Flex>
       {/* Header */}
       <Header currentUser={currentUser} isSidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen}/>
 
-      <Flex flex="1" direction="row">
+      <Flex flex="1" direction="row" overflow="hidden">
         {/* Sidebar */}
         <Sidebars users={users} 
           messages={messages} 
@@ -139,7 +138,7 @@ const Chat: React.FC = () => {
           </VStack>
 
           {/* Message Input */}
-          <Flex mt={4} shadow="sm" align="center" justify="center">
+          <Flex mb={2} shadow="sm" align="center" justify="center">
             <Input
               p={4}
               variant="outline" 
@@ -165,7 +164,6 @@ const Chat: React.FC = () => {
         </Flex>
       </Flex>
     </Flex>
-    </>
   );
 };
 
