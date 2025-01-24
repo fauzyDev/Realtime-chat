@@ -6,6 +6,7 @@ import { Flex } from "@chakra-ui/react";
 import Header from "../Header/Header";
 import Sidebars from "../Sidebar/Sidebars";
 import SelectUser from "../Modal/SelectUser";
+import SendMessage from "../Chat/SendMessage";
 
 const Chat = dynamic(() => import("@/components/Chat/Chat"), { ssr: false })
 interface User {
@@ -40,9 +41,6 @@ export default function Home() {
   const [messages, setMessages] = React.useState<Message[]>([
       { id: 1, senderId: 1, receiverId: null, text: "Hello, everyone!", timestamp: "10:00 AM" },
       { id: 2, senderId: 2, receiverId: null, text: "Hi Alice!", timestamp: "10:01 AM" },
-      // { id: 3, senderId: 2, receiverId: -1, text: "Hey, are you free?", timestamp: "10:02 AM" },
-      // { id: 4, senderId: -1, receiverId: 2, text: "Yes, what's up?", timestamp: "10:03 AM" },
-      // { id: 5, senderId: -1, receiverId: 1, text: "Hello Alice, how are you?", timestamp: "1:03 PM" },
     ]);
   
     const [newMessage, setNewMessage] = React.useState<string>("");
@@ -55,25 +53,45 @@ export default function Home() {
 
   return (
     <Flex direction="column" w="100vw" h="100vh" p={4}>
-      {/* Header */}
-        <Header currentUser={currentUser} isSidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen}/>
+    {/* Header */}
+    <Flex as="header" justify="space-between" align="center" p={4} shadow="lg" rounded="md" mb={4}>
+      <Header 
+        currentUser={currentUser} 
+        isSidebarOpen={isSidebarOpen} 
+        setSidebarOpen={setSidebarOpen}/>
+      </Flex>
 
-        <Flex flex="1" direction="row" overflow="hidden">
-          {/* Sidebar */}
-        <Sidebars users={users} 
-          messages={messages} 
-          modal={<SelectUser users={users} onUserSelect={handleUserSelect}/>} 
-          currentUser={currentUser} 
-          setCurrentUser={setCurrentUser} 
-          isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} 
-          onOpen={() => setSidebarOpen(true)}/>
+    {/* Sidebar */}
+    <Flex flex="1" direction="row" overflow="hidden">
+      <Sidebars 
+        users={users} 
+        messages={messages} 
+        modal={<SelectUser users={users} onUserSelect={handleUserSelect}/>} 
+        currentUser={currentUser} 
+        setCurrentUser={setCurrentUser} 
+        isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} 
+        onOpen={() => setSidebarOpen(true)}/>
 
-          {/* Chat Area */}
-          <Chat/> 
-          
-          {/* Message Input */}
-          
+    {/* Chat Area */}
+    <Flex flex="1" direction="column" shadow="lg" rounded="md">
+      <Flex flex="1" direction="column" overflowY="auto" p={4}>
+        <Chat
+          users={users}
+          messages={messages}
+          currentUser={currentUser}/> 
         </Flex>
+          
+    {/* Message Input */}
+    <Flex mb={2} shadow="sm" align="center" justify="center">
+        <SendMessage 
+          messages={messages} 
+          newMessage={newMessage} 
+          currentUser={currentUser} 
+          setMessages={setMessages}
+          setNewMessage={setNewMessage}/>
+        </Flex>
+      </Flex>  
     </Flex>
+  </Flex>
   ) 
 }

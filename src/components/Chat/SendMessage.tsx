@@ -1,8 +1,5 @@
-import React, { SetStateAction } from 'react';
-import {
-   Flex,
-   Input,
-} from "@chakra-ui/react";
+import React from 'react';
+import { Input } from "@chakra-ui/react";
 import { Button } from "../ui/button";
 import { LuSendHorizontal } from "react-icons/lu";
 
@@ -22,7 +19,7 @@ interface Message {
   }
 
 interface SendMessageProps {
-    messages: string;
+    messages: Message[];
     newMessage: string
     currentUser: User | null;
     setMessages: React.Dispatch<React.SetStateAction<Message[]>>
@@ -51,28 +48,28 @@ const SendMessage: React.FC<SendMessageProps> = ({ messages, newMessage, current
   };
 
     return (
-        <Flex mb={2} shadow="sm" align="center" justify="center">
-            <Input
-              p={4}
-              variant="outline" 
-              css={{ "--focus-color": "lime" }}
-              placeholder={`ketik Pesan ${currentUser ? `ke ${currentUser.name}` : "ke Semua"}`}
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && sendMessage()}/>
+      <>
+        <Input
+          p={4}
+          variant="outline" 
+          css={{ "--focus-color": "lime" }}
+          placeholder={`ketik Pesan ${currentUser ? `ke ${currentUser.name}` : "ke Semua"}`}
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}/>
             
-            <Button
-              ml={2}
-              px={3}
-              variant="solid"
-              bg="blue.500"
-              color="white"
-              rounded="md"
-              _hover={{ bg: "blue.600" }}
-              onClick={sendMessage}>
-              <LuSendHorizontal /> Send
-            </Button>
-        </Flex>
+        <Button
+          ml={2}
+          px={3}
+          variant="solid"
+          bg="blue.500"
+          color="white"
+          rounded="md"
+          _hover={{ bg: "blue.600" }}
+          onClick={sendMessage}>
+          <LuSendHorizontal /> Send
+        </Button>
+      </>
     );
 }
 
