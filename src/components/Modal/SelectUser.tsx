@@ -8,7 +8,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogBody,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { HStack, Box, Badge, Text } from "@chakra-ui/react";
 import { Avatar } from "../ui/avatar";
@@ -49,8 +48,8 @@ const SelectUser: React.FC<ModalProps> = ({ users, onUserSelect }) => {
         <DialogBody>
           {/* Daftar user */}
           {users.map((user) => (
+          <DialogActionTrigger asChild key={user.id}>
             <HStack 
-              key={user.id}
               gap={4}
               p={2}
               rounded="md"
@@ -64,14 +63,10 @@ const SelectUser: React.FC<ModalProps> = ({ users, onUserSelect }) => {
                 </Badge>
               </Box>
             </HStack>
+          </DialogActionTrigger>
           ))}
         </DialogBody>
 
-        <DialogFooter>
-        <DialogActionTrigger asChild>
-            <Button bg="red.600" px={4} fontWeight="semibold" fontSize="md">Batal</Button>
-          </DialogActionTrigger>
-        </DialogFooter>
       </DialogContent>
     </DialogRoot>
   );

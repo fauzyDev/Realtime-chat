@@ -53,8 +53,8 @@ const Sidebars: React.FC<SidebarProps> = ({ users, messages, currentUser, modal,
       (msg) =>
         (msg.senderId === user.id && msg.receiverId === -1) || // Pesan dari user ke "You"
         (msg.senderId === -1 && msg.receiverId === user.id)    // Pesan dari "You" ke user
-    )
-  );
+      )
+    );
 
   return (
     <>
@@ -124,9 +124,9 @@ const Sidebars: React.FC<SidebarProps> = ({ users, messages, currentUser, modal,
                   <Avatar name={user.name} src={user.avatar} />
                   <Box>
                   <Text fontWeight="bold">{user.name}</Text>
-                      <Badge colorPalette={user.status === "online" ? "green" : "yellow"}>
-                          {user.status}
-                      </Badge>
+                    <Badge colorPalette={user.status === "online" ? "green" : "yellow"}>
+                      {user.status}
+                    </Badge>
                   </Box>
                   </HStack>      
                   ))}
