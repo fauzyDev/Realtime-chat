@@ -67,7 +67,6 @@ export default function Home() {
         users={users} 
         messages={messages} 
         modal={<SelectUser users={users} onUserSelect={handleUserSelect}/>} 
-        currentUser={currentUser} 
         setCurrentUser={setCurrentUser} 
         isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} 
         onOpen={() => setSidebarOpen(true)}/>

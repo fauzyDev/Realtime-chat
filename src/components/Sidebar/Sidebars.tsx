@@ -8,6 +8,7 @@ import {
   For,
 } from "@chakra-ui/react";
 import {
+  DrawerActionTrigger,
   DrawerBackdrop,
   DrawerBody,
   DrawerCloseTrigger,
@@ -18,7 +19,6 @@ import {
 } from "../ui/drawer";
 import { Avatar } from "../ui/avatar";
 import { Button } from "../ui/button";
-import { LuMessageCirclePlus } from "react-icons/lu";
 import { FiMessageSquare } from "react-icons/fi";
 import Link from "next/link";
 
@@ -38,7 +38,6 @@ interface Message {
 interface SidebarProps {
   users: User[];
   messages: Message[];
-  currentUser: User | null;
   setCurrentUser: (user: User | null) => void;
   isOpen: boolean; 
   onClose: () => void; 
@@ -46,7 +45,7 @@ interface SidebarProps {
   modal: React.ReactNode
 }
 
-const Sidebars: React.FC<SidebarProps> = ({ users, messages, currentUser, modal, setCurrentUser, isOpen, onClose, onOpen }) => {
+const Sidebars: React.FC<SidebarProps> = ({ users, messages, modal, setCurrentUser, isOpen, onClose, onOpen }) => {
   // Filter user dengan history chat
   const chatHistory = users.filter((user) =>
     messages.some(
@@ -106,31 +105,36 @@ const Sidebars: React.FC<SidebarProps> = ({ users, messages, currentUser, modal,
                 <DrawerTitle fontWeight="semibold" fontSize="xl">Realtime Chat</DrawerTitle>
               </DrawerHeader>
               <DrawerBody>
-              <Button bg="green" color="white" w="full" fontWeight="semibold" mb={4}>
-                <LuMessageCirclePlus />
-                  Chat Baru
-              </Button>
+              <DrawerActionTrigger asChild>
+                <Button bg="green" color="white" w="full" fontWeight="semibold" mb={4}>
+                  {modal}     
+                </Button>
+              </DrawerActionTrigger>
 
               <Text fontWeight="semibold" mb="3">History Chat</Text>
                 <VStack align="stretch" gap={4} onClick={onClose}>
-                  {users.map((user) => (
-                    <HStack key={user.id}
-                    gap={4}
-                    p={2}
-                    bg={currentUser?.id === user.id ? "transparent" : "transparent" }
-                    rounded="md"
-                    _hover={{ bg: "gray.300", cursor: "pointer", color: "black" }}
-                    onClick={() => setCurrentUser(user)}>
-                  <Avatar name={user.name} src={user.avatar} />
-                  <Box>
-                  <Text fontWeight="bold">{user.name}</Text>
-                    <Badge colorPalette={user.status === "online" ? "green" : "yellow"}>
-                      {user.status}
-                    </Badge>
-                  </Box>
-                  </HStack>      
-                  ))}
+                {chatHistory.length > 0 ? 
+                (chatHistory.map((user) => (
+                <HStack key={user.id}
+                  gap={4}
+                  p={2}
+                  rounded="md"
+                  _hover={{ bg: "gray.300", cursor: "pointer", color: "black" }}
+                  onClick={() => setCurrentUser(user)}>
+                <Avatar name={user.name} src={user.avatar} />
+              <Box>
+              <Text fontWeight="bold">{user.name}</Text>
+                <Badge colorPalette={user.status === "online" ? "green" : "yellow"}>
+                  {user.status}
+                </Badge>
+              </Box>
+              </HStack>
+              )) 
+              ) : (
+                <Text className="text-center mb-10">Tidak Ada</Text>
+              )}
                 <Button onClick={() => setCurrentUser(null)} mt={4} w="full" bg="blue" color="white" fontWeight="semibold">
+                <FiMessageSquare />
                   All Chat
                 </Button>
                 <Link href="/api/auth/signin" className="bg-slate-600 font-semibold px-4 py-2 text-center">

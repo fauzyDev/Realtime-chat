@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogBody,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { HStack, Box, Badge, Text } from "@chakra-ui/react";
 import { Avatar } from "../ui/avatar";
@@ -66,7 +67,7 @@ const SelectUser: React.FC<ModalProps> = ({ users, onUserSelect }) => {
           </DialogActionTrigger>
           ))}
         </DialogBody>
-
+        <DialogFooter/>
       </DialogContent>
     </DialogRoot>
   );
