@@ -25,14 +25,15 @@ interface User {
 interface ModalProps {
   users: User[];
   onUserSelect: (user: User) => void;
+  onClose: VoidFunction
 }
 
-const SelectUser: React.FC<ModalProps> = ({ users, onUserSelect }) => {
+const SelectUser: React.FC<ModalProps> = ({ users, onUserSelect, onClose }) => {
   return (
     <DialogRoot scrollBehavior="inside" size="xs">
       {/* Trigger untuk membuka modal */}
       <DialogTrigger asChild>        
-        <Button bg="green" color="white" w="full" fontWeight="semibold" mb={4}>
+        <Button bg="green" color="white" w="full" fontWeight="semibold" mb={4} onClick={() => onClose()}>
             <LuMessageCirclePlus />
             Chat Baru
         </Button>

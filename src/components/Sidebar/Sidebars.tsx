@@ -8,7 +8,6 @@ import {
   For,
 } from "@chakra-ui/react";
 import {
-  DrawerActionTrigger,
   DrawerBackdrop,
   DrawerBody,
   DrawerCloseTrigger,
@@ -105,12 +104,7 @@ const Sidebars: React.FC<SidebarProps> = ({ users, messages, modal, setCurrentUs
                 <DrawerTitle fontWeight="semibold" fontSize="xl">Realtime Chat</DrawerTitle>
               </DrawerHeader>
               <DrawerBody>
-              <DrawerActionTrigger asChild>
-                <Button bg="green" color="white" w="full" fontWeight="semibold" mb={4}>
-                  {modal}     
-                </Button>
-              </DrawerActionTrigger>
-
+                {modal}
               <Text fontWeight="semibold" mb="3">History Chat</Text>
                 <VStack align="stretch" gap={4} onClick={onClose}>
                 {chatHistory.length > 0 ? 
