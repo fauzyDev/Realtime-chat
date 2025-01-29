@@ -11,16 +11,16 @@ import { Button } from "../ui/button";
 import { Avatar } from "@/components/ui/avatar";
 
 interface User {
-    id: number;
-    name: string;
-    avatar: string; 
-    status: string; 
+  id: number;
+  name: string;
+  avatar: string; 
+  status: string; 
 }
 
 interface HeaderProps {
-    currentUser: User | null;
-    isSidebarOpen: boolean;
-    setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>
+  currentUser: User | null;
+  isSidebarOpen: boolean;
+  setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const Header: React.FC<HeaderProps> = ({ currentUser, isSidebarOpen, setSidebarOpen }) => {
@@ -47,7 +47,7 @@ const Header: React.FC<HeaderProps> = ({ currentUser, isSidebarOpen, setSidebarO
             <Text fontSize="sm" fontWeight="bold">
               {currentUser.name}
             </Text>
-            <Badge colorPalette={currentUser.status === "online" ? "green" : "yellow"}>
+            <Badge colorPalette={currentUser.status === "online" ? "green" : currentUser.status === "mengetik..." ? "yellow" : "gray"}>
               {currentUser.status}
             </Badge>
           </VStack>

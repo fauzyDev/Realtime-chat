@@ -73,7 +73,7 @@ const Sidebars: React.FC<SidebarProps> = ({ users, messages, modal, setCurrentUs
             <Avatar name={user.name} src={user.avatar} />
           <Box>
           <Text fontWeight="bold">{user.name}</Text>
-            <Badge colorPalette={user.status === "online" ? "green" : "yellow"}>
+            <Badge colorPalette={user.status === "online" ? "green" : user.status === "mengetik..." ? "yellow" : "gray"}>
               {user.status}
             </Badge>
           </Box>
@@ -86,7 +86,7 @@ const Sidebars: React.FC<SidebarProps> = ({ users, messages, modal, setCurrentUs
         <FiMessageSquare />
             All Chat
           </Button>
-          <Link href="/api/auth/signin" className="bg-slate-600 font-semibold px-4 py-2 text-center">
+          <Link href="/api/auth/signin" className="bg-slate-600 font-semibold px-4 py-2 text-center text-white">
             Login
           </Link>
         </VStack>
@@ -131,7 +131,7 @@ const Sidebars: React.FC<SidebarProps> = ({ users, messages, modal, setCurrentUs
                 <FiMessageSquare />
                   All Chat
                 </Button>
-                <Link href="/api/auth/signin" className="bg-slate-600 font-semibold px-4 py-2 text-center">
+                <Link href="/api/auth/signin" className="bg-slate-600 font-semibold px-4 py-2 text-center text-white">
                     Login
                   </Link>
                 </VStack>
@@ -148,3 +148,5 @@ const Sidebars: React.FC<SidebarProps> = ({ users, messages, modal, setCurrentUs
 };
 
 export default Sidebars;
+
+// pass database fwZZ30wRNAWrAQg5

@@ -25,15 +25,15 @@ interface User {
 interface ModalProps {
   users: User[];
   onUserSelect: (user: User) => void;
-  onClose: VoidFunction
+ 
 }
 
-const SelectUser: React.FC<ModalProps> = ({ users, onUserSelect, onClose }) => {
+const SelectUser: React.FC<ModalProps> = ({ users, onUserSelect }) => {
   return (
     <DialogRoot scrollBehavior="inside" size="xs">
       {/* Trigger untuk membuka modal */}
       <DialogTrigger asChild>        
-        <Button bg="green" color="white" w="full" fontWeight="semibold" mb={4} onClick={() => onClose()}>
+        <Button bg="green" color="white" w="full" fontWeight="semibold" mb={4}>
             <LuMessageCirclePlus />
             Chat Baru
         </Button>
@@ -60,7 +60,7 @@ const SelectUser: React.FC<ModalProps> = ({ users, onUserSelect, onClose }) => {
               <Avatar name={user.name} src={user.avatar} />
             <Box>
               <Text fontWeight="bold">{user.name}</Text>
-                <Badge colorPalette={user.status === "online" ? "green" : "yellow"}>
+                <Badge colorPalette={user.status === "online" ? "green" : user.status === "mengetik..." ? "yellow" : "gray"}>
                   {user.status}
                 </Badge>
               </Box>

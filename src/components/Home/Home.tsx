@@ -46,20 +46,11 @@ export default function Home() {
     const [newMessage, setNewMessage] = React.useState<string>("");
     const [currentUser, setCurrentUser] = React.useState<User | null>(null); // User yang sedang di-chat
     const [isSidebarOpen, setSidebarOpen] = React.useState<boolean>(false);
-    const [isModalOpen, setModalOpen] = React.useState<boolean>(true);
   
     const handleUserSelect = (user: User): void => {
       setCurrentUser(user); // Simpan user yang dipilih
-    };
-
-    const handleOpenModal = () => {
-      setModalOpen(true)
       setSidebarOpen(false)
-    }
-
-    // const handleCloseModal = () => {
-    //   setModalOpen(false)
-    // }
+    };
 
   return (
     <Flex direction="column" w="100vw" h="100vh" p={4}>
@@ -76,7 +67,7 @@ export default function Home() {
       <Sidebars 
         users={users} 
         messages={messages} 
-        modal={isModalOpen && ( <SelectUser users={users} onUserSelect={handleUserSelect} onClose={handleOpenModal}/> )} 
+        modal={<SelectUser users={users} onUserSelect={handleUserSelect}/>} 
         setCurrentUser={setCurrentUser} 
         isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} 
         onOpen={() => setSidebarOpen(true)}/>
