@@ -29,8 +29,8 @@ interface User {
 }
 interface Message {
   id: number;
-  senderId: number;
-  receiverId: number | null; // Null untuk all-chat
+  sender_id: number;
+  receiver_id: number | null; // Null untuk all-chat
   text: string;
   timestamp: string;
 }
@@ -49,8 +49,8 @@ const Sidebars: React.FC<SidebarProps> = ({ users, messages, modal, setCurrentUs
   const chatHistory = users.filter((user) =>
     messages.some(
       (msg) =>
-        (msg.senderId === user.id && msg.receiverId === -1) || // Pesan dari user ke "You"
-        (msg.senderId === -1 && msg.receiverId === user.id)    // Pesan dari "You" ke user
+        (msg.sender_id === user.id && msg.receiver_id === -1) || // Pesan dari user ke "You"
+        (msg.sender_id === -1 && msg.receiver_id === user.id)    // Pesan dari "You" ke user
       )
     );
 

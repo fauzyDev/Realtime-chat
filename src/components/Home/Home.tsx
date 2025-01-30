@@ -19,8 +19,8 @@ interface User {
 
 interface Message {
   id: number;
-  senderId: number;
-  receiverId: number | null; // Null untuk all-chat
+  sender_id: number;
+  receiver_id: number | null; // Null untuk all-chat
   text: string;
   timestamp: string;
 }

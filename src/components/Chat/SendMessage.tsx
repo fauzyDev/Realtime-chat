@@ -39,8 +39,9 @@ const SendMessage: React.FC<SendMessageProps> = ({ newMessage, currentUser, setM
         .insert([
           {
             text: newMessage,  // Kolom yang benar adalah 'text'
-            sender_id: currentUser?.id || null, // Ambil dari currentUser
+            sender_id: currentUser?.id ?? null, // Ambil dari currentUser
             receiver_id: null, // Null untuk chat ke semua orang
+            created_at: new Date().toLocaleTimeString()
           }
         ])
         .select()
@@ -53,11 +54,7 @@ const SendMessage: React.FC<SendMessageProps> = ({ newMessage, currentUser, setM
         sender_id: data.sender_id,
         receiver_id: data.receiver_id,
         text: data.text,
-        timestamp: new Date().toLocaleTimeString("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false
-        }),
+        timestamp: data.created_at,
       };
 
       setMessages((prev) => [...prev, newMsg]); // Tambahkan pesan baru ke daftar
@@ -87,8 +84,7 @@ const SendMessage: React.FC<SendMessageProps> = ({ newMessage, currentUser, setM
         color="white"
         rounded="md"
         _hover={{ bg: "blue.600" }}
-        onClick={sendMessage}
-      >
+        onClick={sendMessage}>
         <LuSendHorizontal /> Send
       </Button>
     </>

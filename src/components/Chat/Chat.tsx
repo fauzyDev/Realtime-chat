@@ -16,8 +16,8 @@ interface User {
 }
 interface Message {
   id: number;
-  senderId: number;
-  receiverId: number | null; // Null untuk all-chat
+  sender_id: number;
+  receiver_id: number | null; // Null untuk all-chat
   text: string;
   timestamp: string;
 }
@@ -33,19 +33,19 @@ const Chat: React.FC<ChatProps> = ({ users, messages, currentUser }) => {
   const filteredMessages = currentUser
     ? messages.filter(
         (msg) =>
-          (msg.senderId === currentUser.id && msg.receiverId === -1) || // Pesan dari user ke "You"
-          (msg.senderId === -1 && msg.receiverId === currentUser.id) // Pesan dari "You" ke user
+          (msg.sender_id === currentUser.id && msg.receiver_id === -1) || // Pesan dari user ke "You"
+          (msg.sender_id === -1 && msg.receiver_id === currentUser.id) // Pesan dari "You" ke user
       )
-    : messages.filter((msg) => msg.receiverId === null); // All-chat
+    : messages.filter((msg) => msg.receiver_id === null); // All-chat
 
   return (
     <>
       <VStack align="stretch" flex="1" overflowY="auto" p={4} gap={4}>
         {filteredMessages.length > 0 ? (
           filteredMessages.map((message) => {
-            const sender = message.senderId === -1
+            const sender = message.sender_id === -1
               ? { name: "You", avatar: "null" }
-              : users.find((u) => u.id === message.senderId) || { name: "Unknown", avatar: "" };
+              : users.find((u) => u.id === message.sender_id) || { name: "Unknown", avatar: "" };
 
         return (
           <HStack key={message.id} align="start" gap={3} p={3} rounded="md" shadow="lg">
@@ -57,7 +57,11 @@ const Chat: React.FC<ChatProps> = ({ users, messages, currentUser }) => {
               <Text fontSize="sm" fontWeight="bold">
                 {sender.name}{" "}
               <Text as="span" fontWeight="normal" color="gray.500">
-                ({message.timestamp})
+                ({new Date(message.timestamp).toLocaleTimeString("en-US", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false
+                })})
                 </Text>
               </Text>
                 <Text>{message.text}</Text>
