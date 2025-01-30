@@ -7,6 +7,7 @@ import Header from "../Header/Header";
 import Sidebars from "../Sidebar/Sidebars";
 import SelectUser from "../Modal/SelectUser";
 import SendMessage from "../Chat/SendMessage";
+import { supabase } from "@/libs/supabase";
 
 const Chat = dynamic(() => import("@/components/Chat/Chat"), { ssr: false })
 interface User {
@@ -38,14 +39,42 @@ const users: User[] = [
 ];
 
 export default function Home() {
-  const [messages, setMessages] = React.useState<Message[]>([
-      { id: 1, senderId: 1, receiverId: null, text: "Hello, everyone!", timestamp: "10:00 AM" },
-      { id: 2, senderId: 2, receiverId: null, text: "Hi Alice!", timestamp: "10:01 AM" },
-    ]);
-  
+    const [messages, setMessages] = React.useState<Message[]>([]);
     const [newMessage, setNewMessage] = React.useState<string>("");
     const [currentUser, setCurrentUser] = React.useState<User | null>(null); // User yang sedang di-chat
     const [isSidebarOpen, setSidebarOpen] = React.useState<boolean>(false);
+
+    // Ambil pesan awal saat pertama kali aplikasi dibuka
+    const fetchMessages = async () => {
+    const { data, error } = await supabase
+      .from("messages")
+      .select("*")
+      .order("created_at", { ascending: true });
+
+    if (error) console.error("Gagal mengambil pesan:", error);
+    else setMessages(data);
+  };
+
+  React.useEffect(() => {
+    fetchMessages(); // Ambil pesan awal
+
+    // Dengarkan perubahan data secara realtime
+    const channel = supabase
+      .channel("messages")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "messages" },
+        (payload) => {
+          console.log("Pesan baru diterima:", payload.new);
+          setMessages((prevMessages) => [...prevMessages, payload.new as Message]);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
   
     const handleUserSelect = (user: User): void => {
       setCurrentUser(user); // Simpan user yang dipilih
