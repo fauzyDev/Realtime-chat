@@ -56,11 +56,11 @@ const Chat: React.FC<ChatProps> = ({ users, messages, currentUser }) => {
               <Text fontSize="sm" fontWeight="bold">
                 {sender.name}{" "}
               <Text as="span" fontWeight="normal" color="gray.500">
-               {message.timestamp instanceof Date ? message.timestamp.toLocaleTimeString("jkt-ID", {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false
-               }) : "Gagal"}
+               ({message.timestamp instanceof Date ? message.timestamp.toLocaleTimeString("jkt-ID", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false
+                }) : "Waktu tidak ada"})
                 </Text>
               </Text>
                 <Text>{message.text}</Text>

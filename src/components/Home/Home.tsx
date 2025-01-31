@@ -51,8 +51,11 @@ export default function Home() {
       .select("*")
       .order("created_at", { ascending: true });
 
-    if (error) console.error("Gagal mengambil pesan:", error);
-    else setMessages(data);
+    if (error) {
+      console.error("Gagal mengambil pesan:", error) 
+      return
+    }
+    setMessages(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) })));
   };
 
   React.useEffect(() => {
