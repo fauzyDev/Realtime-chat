@@ -16,7 +16,7 @@ interface Message {
   sender_id: number;
   receiver_id: number | null; // Null untuk all-chat
   text: string;
-  timestamp: string;
+  timestamp: Date;
 }
 
 interface SendMessageProps {
@@ -41,7 +41,6 @@ const SendMessage: React.FC<SendMessageProps> = ({ newMessage, currentUser, setM
             text: newMessage,  // Kolom yang benar adalah 'text'
             sender_id: currentUser?.id ?? null, // Ambil dari currentUser
             receiver_id: null, // Null untuk chat ke semua orang
-            created_at: new Date().toLocaleTimeString()
           }
         ])
         .select()
@@ -54,7 +53,7 @@ const SendMessage: React.FC<SendMessageProps> = ({ newMessage, currentUser, setM
         sender_id: data.sender_id,
         receiver_id: data.receiver_id,
         text: data.text,
-        timestamp: data.created_at,
+        timestamp: new Date(data.created_at),
       };
 
       setMessages((prev) => [...prev, newMsg]); // Tambahkan pesan baru ke daftar

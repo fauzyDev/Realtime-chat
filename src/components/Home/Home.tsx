@@ -22,7 +22,7 @@ interface Message {
   sender_id: number;
   receiver_id: number | null; // Null untuk all-chat
   text: string;
-  timestamp: string;
+  timestamp: Date;
 }
 
 const users: User[] = [

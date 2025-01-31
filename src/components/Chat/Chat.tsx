@@ -19,7 +19,7 @@ interface Message {
   sender_id: number;
   receiver_id: number | null; // Null untuk all-chat
   text: string;
-  timestamp: string;
+  timestamp: Date;
 }
 
 interface ChatProps{
@@ -30,13 +30,12 @@ interface ChatProps{
 const Chat: React.FC<ChatProps> = ({ users, messages, currentUser }) => {
 
   // Filter pesan berdasarkan pengguna yang sedang di-chat
-  const filteredMessages = currentUser
-    ? messages.filter(
+  const filteredMessages = currentUser ? 
+      messages.filter(
         (msg) =>
           (msg.sender_id === currentUser.id && msg.receiver_id === -1) || // Pesan dari user ke "You"
           (msg.sender_id === -1 && msg.receiver_id === currentUser.id) // Pesan dari "You" ke user
-      )
-    : messages.filter((msg) => msg.receiver_id === null); // All-chat
+      ) : messages.filter((msg) => msg.receiver_id === null); // All-chat
 
   return (
     <>
@@ -44,8 +43,8 @@ const Chat: React.FC<ChatProps> = ({ users, messages, currentUser }) => {
         {filteredMessages.length > 0 ? (
           filteredMessages.map((message) => {
             const sender = message.sender_id === -1
-              ? { name: "You", avatar: "null" }
-              : users.find((u) => u.id === message.sender_id) || { name: "Unknown", avatar: "" };
+              ? { name: "You", avatar: "https://i.pravatar.cc/150?img=1" }
+              : users.find((u) => u.id === message.sender_id) || { name: "Unknown", avatar: "https://i.pravatar.cc/150?img=1" };
 
         return (
           <HStack key={message.id} align="start" gap={3} p={3} rounded="md" shadow="lg">
@@ -57,11 +56,11 @@ const Chat: React.FC<ChatProps> = ({ users, messages, currentUser }) => {
               <Text fontSize="sm" fontWeight="bold">
                 {sender.name}{" "}
               <Text as="span" fontWeight="normal" color="gray.500">
-                ({new Date(message.timestamp).toLocaleTimeString("en-US", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: false
-                })})
+               {message.timestamp instanceof Date ? message.timestamp.toLocaleTimeString("jkt-ID", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false
+               }) : "Gagal"}
                 </Text>
               </Text>
                 <Text>{message.text}</Text>
