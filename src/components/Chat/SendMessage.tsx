@@ -1,8 +1,11 @@
+"use client"
+
 import React from 'react';
 import { Input } from "@chakra-ui/react";
 import { Button } from "../ui/button";
 import { LuSendHorizontal } from "react-icons/lu";
 import { supabase } from '@/libs/supabase';
+import { useSession } from "next-auth/react";
 
 interface User {
   id: number;
@@ -28,10 +31,11 @@ interface SendMessageProps {
 }
 
 const SendMessage: React.FC<SendMessageProps> = ({ newMessage, currentUser, setMessages, setNewMessage }) => {
+  const { data: session } = useSession();
 
   // Fungsi untuk mengirim pesan
   const sendMessage = async () => {
-    if (newMessage.trim() === "") return;
+    if (!session?.user || newMessage.trim() === "") return;
 
     try {
       const { data, error } = await supabase
@@ -39,7 +43,7 @@ const SendMessage: React.FC<SendMessageProps> = ({ newMessage, currentUser, setM
         .insert([
           {
             text: newMessage,  // Kolom yang benar adalah 'text'
-            sender_id: currentUser?.id ?? null, // Ambil dari currentUser
+            sender_id: session.user ?? null, // Ambil dari currentUser
             receiver_id: null, // Null untuk chat ke semua orang
           }
         ])

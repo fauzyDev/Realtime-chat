@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@auth/supabase-adapter": "^1.7.4",
     "@chakra-ui/react": "^3.3.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
