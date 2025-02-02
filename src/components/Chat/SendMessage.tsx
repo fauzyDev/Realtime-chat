@@ -1,11 +1,8 @@
-"use client"
-
 import React from 'react';
 import { Input } from "@chakra-ui/react";
 import { Button } from "../ui/button";
 import { LuSendHorizontal } from "react-icons/lu";
 import { supabase } from '@/libs/supabase';
-import { useSession } from "next-auth/react";
 
 interface User {
   id: number;
