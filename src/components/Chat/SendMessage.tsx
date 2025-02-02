@@ -2,7 +2,7 @@ import React from 'react';
 import { Input } from "@chakra-ui/react";
 import { Button } from "../ui/button";
 import { LuSendHorizontal } from "react-icons/lu";
-import { supabase } from '@/libs/supabase';
+
 
 interface User {
   id: number;
@@ -28,26 +28,26 @@ interface SendMessageProps {
 }
 
 const SendMessage: React.FC<SendMessageProps> = ({ newMessage, currentUser, setMessages, setNewMessage }) => {
-  const { data: session } = useSession();
 
   // Fungsi untuk mengirim pesan
   const sendMessage = async () => {
-    if (!session?.user || newMessage.trim() === "") return;
+    if (!newMessage || newMessage.trim() === "") return;
 
     try {
-      const { data, error } = await supabase
-        .from("messages")
-        .insert([
-          {
-            text: newMessage,  // Kolom yang benar adalah 'text'
-            sender_id: session.user ?? null, // Ambil dari currentUser
-            receiver_id: null, // Null untuk chat ke semua orang
-          }
-        ])
-        .select()
-        .single();
-
-      if (error) throw error;
+      const response = await fetch("/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: newMessage,
+          receiver_id: currentUser?.id ?? null, // Null untuk all-chat
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Gagal mengirim pesan");
+      }
+  
+      const data = await response.json();
 
       const newMsg: Message = {
         id: data.id,

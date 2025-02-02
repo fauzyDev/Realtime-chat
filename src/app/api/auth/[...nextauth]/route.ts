@@ -10,23 +10,23 @@ export const authOptions: NextAuthOptions = {
     providers: [
         Google({
             clientId,
-            clientSecret 
+            clientSecret
         })
-    ],    
+    ],
     secret: process.env.NEXTAUTH_SECRET,
 
     callbacks: {
         async signIn({ user }) {
             const { email, name, image } = user
             const { data: users } = await supabase
-            .from("user")
-            .select()
-            .eq("email", email)
-            .single()
+                .from("user")
+                .select()
+                .eq("email", email)
+                .single()
 
             if (!users) {
                 const { error: inError } = await supabase.from("users").insert([
-                { email, name, avatar: image }
+                    { email, name, avatar: image }
                 ]);
 
                 if (inError) {
@@ -40,16 +40,15 @@ export const authOptions: NextAuthOptions = {
         async session({ session }) {
             if (session?.user) {
                 const { data: user } = await supabase
-                .from("users")
-                .select("id")
-                .eq("email", session.user.email)
-                .single()
+                    .from("users")
+                    .select("id")
+                    .eq("email", session.user.email)
+                    .single()
 
-            if (user) {
-                session.user = user.id
+                if (user) {
+                    session.user = user.id
+                }
             }
-            }
-
             return session
         }
     }
