@@ -25,24 +25,25 @@ interface Message {
   timestamp: Date;
 }
 
-const users: User[] = [
-  { id: 1, name: "Alice", avatar: "https://i.pravatar.cc/150?img=1", status: "online" },
-  { id: 2, name: "Bob", avatar: "https://i.pravatar.cc/150?img=2", status: "mengetik..." },
-  { id: 3, name: "Sandi", avatar: "https://i.pravatar.cc/150?img=2", status: "online" },
-  { id: 4, name: "Luna", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
-  { id: 5, name: "Milda", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
-  { id: 6, name: "Sarah", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
-  { id: 7, name: "Nanda", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
-  { id: 8, name: "Alya", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
-  { id: 9, name: "Linda", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
-  { id: 10, name: "Maya", avatar: "https://i.pravatar.cc/150?img=1", status: "offline" },
-];
 
 export default function Home() {
     const [messages, setMessages] = React.useState<Message[]>([]);
     const [newMessage, setNewMessage] = React.useState<string>("");
+    const [users, setUsers] = React.useState<User[]>([])
     const [currentUser, setCurrentUser] = React.useState<User | null>(null); // User yang sedang di-chat
     const [isSidebarOpen, setSidebarOpen] = React.useState<boolean>(false);
+
+    const fetchUsers = async () => {
+      const { data, error } = await supabase
+      .from("users")
+      .select()
+
+      if (error) {
+        console.error("Gagal", error)
+        return
+      }
+      setUsers(data)
+    }
 
     // Ambil pesan awal saat pertama kali aplikasi dibuka
     const fetchMessages = async () => {
@@ -59,6 +60,7 @@ export default function Home() {
   };
 
   React.useEffect(() => {
+    fetchUsers()
     fetchMessages(); // Ambil pesan awal
 
     // Dengarkan perubahan data secara realtime
