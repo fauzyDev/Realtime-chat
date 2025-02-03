@@ -8,6 +8,7 @@ import Sidebars from "../Sidebar/Sidebars";
 import SelectUser from "../Modal/SelectUser";
 import SendMessage from "../Chat/SendMessage";
 import { supabase } from "@/libs/supabase";
+import { userSession } from "@/libs/auth";
 
 const Chat = dynamic(() => import("@/components/Chat/Chat"), { ssr: false })
 interface User {
@@ -27,6 +28,7 @@ interface Message {
 
 
 export default function Home() {
+    const session = userSession()
     const [messages, setMessages] = React.useState<Message[]>([]);
     const [newMessage, setNewMessage] = React.useState<string>("");
     const [users, setUsers] = React.useState<User[]>([])
@@ -36,7 +38,7 @@ export default function Home() {
     const fetchUsers = async () => {
       const { data, error } = await supabase
       .from("users")
-      .select()
+      .select("*")
 
       if (error) {
         console.error("Gagal", error)
@@ -44,6 +46,27 @@ export default function Home() {
       }
       setUsers(data)
     }
+
+    React.useEffect(() => {
+      fetchUsers()
+      // Dengarkan perubahan data secara realtime
+      const channel = supabase
+        .channel("users")
+        .on(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "users" },
+          (payload) => {
+            console.log("User Status:", payload.new);
+            setUsers((prevUsers) => prevUsers.map((user) =>
+            user.id === payload.new.id ? { ...user, status: payload.new.status } : user ));
+          }
+        )
+        .subscribe();
+  
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }, [session]);
 
     // Ambil pesan awal saat pertama kali aplikasi dibuka
     const fetchMessages = async () => {
@@ -60,7 +83,6 @@ export default function Home() {
   };
 
   React.useEffect(() => {
-    fetchUsers()
     fetchMessages(); // Ambil pesan awal
 
     // Dengarkan perubahan data secara realtime
@@ -79,7 +101,7 @@ export default function Home() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [session]);
   
     const handleUserSelect = (user: User): void => {
       setCurrentUser(user); // Simpan user yang dipilih
