@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     // Simpan pesan ke database
     const { data, error } = await supabase
       .from("messages")
-      .insert([{ text, sender_id: session, receiver_id }])
+      .insert([{ text, sender_id: session.user, receiver_id }])
       .select()
       .single();
 

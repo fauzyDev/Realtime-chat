@@ -8,7 +8,7 @@ import Sidebars from "../Sidebar/Sidebars";
 import SelectUser from "../Modal/SelectUser";
 import SendMessage from "../Chat/SendMessage";
 import { supabase } from "@/libs/supabase";
-import { userSession } from "@/libs/auth";
+import { useSession } from "next-auth/react"
 
 const Chat = dynamic(() => import("@/components/Chat/Chat"), { ssr: false })
 interface User {
@@ -28,7 +28,7 @@ interface Message {
 
 
 export default function Home() {
-    const session = userSession()
+    const { data: session } = useSession()
     const [messages, setMessages] = React.useState<Message[]>([]);
     const [newMessage, setNewMessage] = React.useState<string>("");
     const [users, setUsers] = React.useState<User[]>([])
