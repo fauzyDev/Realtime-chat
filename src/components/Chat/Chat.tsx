@@ -33,8 +33,8 @@ const Chat: React.FC<ChatProps> = ({ users, messages, currentUser }) => {
   const filteredMessages = currentUser ? 
       messages.filter(
         (msg) =>
-          (msg.sender_id === currentUser.id && msg.receiver_id === -1) || // Pesan dari user ke "You"
-          (msg.sender_id === -1 && msg.receiver_id === currentUser.id) // Pesan dari "You" ke user
+          (msg.sender_id === currentUser.id && msg.receiver_id !== null ) || // Pesan dari user ke "You"
+          (msg.receiver_id === currentUser.id) // Pesan dari "You" ke user
       ) : messages.filter((msg) => msg.receiver_id === null); // All-chat
 
   return (
@@ -42,9 +42,9 @@ const Chat: React.FC<ChatProps> = ({ users, messages, currentUser }) => {
       <VStack align="stretch" flex="1" overflowY="auto" p={4} gap={4}>
         {filteredMessages.length > 0 ? (
           filteredMessages.map((message) => {
-            const sender = message.sender_id === -1
-              ? { name: "You", avatar: "https://i.pravatar.cc/150?img=1" }
-              : users.find((u) => u.id === message.sender_id) || { name: "Unknown", avatar: "https://i.pravatar.cc/150?img=1" };
+            const sender = message.sender_id === currentUser?.id
+              ? { name: "y", avatar: "x" }
+              : users.find((u) => u.id === message.sender_id) || { name: "y", avatar: "x" }; 
 
         return (
           <HStack key={message.id} align="start" gap={3} p={3} rounded="md" shadow="lg">

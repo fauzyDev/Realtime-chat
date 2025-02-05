@@ -49,8 +49,8 @@ const Sidebars: React.FC<SidebarProps> = ({ users, messages, modal, setCurrentUs
   const chatHistory = users.filter((user) =>
     messages.some(
       (msg) =>
-        (msg.sender_id === user.id && msg.receiver_id === -1) || // Pesan dari user ke "You"
-        (msg.sender_id === -1 && msg.receiver_id === user.id)    // Pesan dari "You" ke user
+        (msg.sender_id === user.id && msg.receiver_id !== null) || // Pesan dari user ke "You"
+        (msg.receiver_id === user.id)   // Pesan dari "You" ke user
       )
     );
 

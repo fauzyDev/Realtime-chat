@@ -26,7 +26,6 @@ interface Message {
   timestamp: Date;
 }
 
-
 export default function Home() {
     const { data: session } = useSession()
     const [messages, setMessages] = React.useState<Message[]>([]);
@@ -66,7 +65,7 @@ export default function Home() {
       return () => {
         supabase.removeChannel(channel);
       };
-    }, [session]);
+    }, [session?.user]);
 
     // Ambil pesan awal saat pertama kali aplikasi dibuka
     const fetchMessages = async () => {
@@ -101,12 +100,15 @@ export default function Home() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [session]);
+  }, [session?.user]);
   
     const handleUserSelect = (user: User): void => {
       setCurrentUser(user); // Simpan user yang dipilih
       setSidebarOpen(false)
     };
+
+    const currentUsr = session?.user; 
+    const filteredUsers = users.filter((user) => user.id !== currentUsr);
 
   return (
     <Flex direction="column" w="100vw" h="100vh" p={4}>
@@ -121,9 +123,9 @@ export default function Home() {
     {/* Sidebar */}
     <Flex flex="1" direction="row" overflow="hidden">
       <Sidebars 
-        users={users} 
+        users={filteredUsers} 
         messages={messages} 
-        modal={<SelectUser users={users} onUserSelect={handleUserSelect}/>} 
+        modal={<SelectUser users={filteredUsers} onUserSelect={handleUserSelect}/>} 
         setCurrentUser={setCurrentUser} 
         isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} 
         onOpen={() => setSidebarOpen(true)}/>
