@@ -28,6 +28,7 @@ interface Message {
 
 export default function Home() {
     const { data: session } = useSession()
+    const currentUserId = session?.user;
     const [messages, setMessages] = React.useState<Message[]>([]);
     const [newMessage, setNewMessage] = React.useState<string>("");
     const [users, setUsers] = React.useState<User[]>([])
@@ -107,8 +108,9 @@ export default function Home() {
       setSidebarOpen(false)
     };
 
-    const currentUsr = session?.user; 
-    const filteredUsers = users.filter((user) => user.id !== currentUsr);
+    const filteredUsers = users.filter((user) => user.id !== currentUserId);
+    console.log("Filtered Users:", filteredUsers);
+
 
   return (
     <Flex direction="column" w="100vw" h="100vh" p={4}>

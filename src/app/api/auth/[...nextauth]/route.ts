@@ -19,12 +19,16 @@ export const authOptions: NextAuthOptions = {
         async signIn({ user }) {
             const { email, name, image } = user
             const { data: users } = await supabase
-                .from("user")
+                .from("users")
                 .select()
                 .eq("email", email)
                 .single()
 
             if (!users) {
+                if (!email || !name || !image) {
+                    return false;
+                  }
+                  
                 const { error: inError } = await supabase.from("users").insert([
                     { email, name, avatar: image }
                 ]);
@@ -41,12 +45,13 @@ export const authOptions: NextAuthOptions = {
             if (session?.user) {
                 const { data: user } = await supabase
                     .from("users")
-                    .select("id")
+                    .select()
                     .eq("email", session.user.email)
                     .single()
 
                 if (user) {
                     session.user = user.id
+                    
                 }
             }
             return session
