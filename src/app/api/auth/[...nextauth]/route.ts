@@ -34,7 +34,7 @@ export const authOptions: NextAuthOptions = {
                 ]);
 
                 if (inError) {
-                    console.error("Gagal menyimpan user ke Supabase:", inError);
+                    console.error("Gagal menyimpan user:", inError);
                     return false;
                 }
             }
@@ -45,14 +45,12 @@ export const authOptions: NextAuthOptions = {
             if (session?.user) {
                 const { data: user } = await supabase
                     .from("users")
-                    .select()
+                    .select("id")
                     .eq("email", session.user.email)
                     .single()
-
-                if (user) {
-                    session.user = user.id
-                    
-                }
+            if (user) {
+                session.user = user.id
+                }            
             }
             return session
         }

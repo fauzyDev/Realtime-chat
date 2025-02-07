@@ -49,24 +49,27 @@ const SelectUser: React.FC<ModalProps> = ({ users, onUserSelect }) => {
 
         <DialogBody>
           {/* Daftar user */}
-          {users.map((user) => (
-          <DialogActionTrigger asChild key={user.id}>
-            <HStack 
-              gap={4}
-              p={2}
-              rounded="md"
-              _hover={{ bg: "gray.300", cursor: "pointer", color: "black" }}
-              onClick={() => onUserSelect(user)}>
-              <Avatar name={user.name} src={user.avatar} />
-            <Box>
-              <Text fontWeight="bold">{user.name}</Text>
-                <Badge colorPalette={user.status === "online" ? "green" : user.status === "mengetik..." ? "yellow" : "gray"}>
-                  {user.status}
-                </Badge>
-              </Box>
-            </HStack>
-          </DialogActionTrigger>
-          ))}
+          {users.length > 0 ? (
+            users.map((user) => (
+              <DialogActionTrigger asChild key={user.id}>
+                <HStack 
+                  gap={4}
+                  p={2}
+                  rounded="md"
+                  _hover={{ bg: "gray.300", cursor: "pointer", color: "black" }}
+                  onClick={() => onUserSelect(user)}>
+                  <Avatar name={user.name} src={user.avatar} />
+                <Box>
+                  <Text fontWeight="bold">{user.name}</Text>
+                    <Badge colorPalette={user.status === "online" ? "green" : user.status === "mengetik..." ? "yellow" : "gray"}>
+                      {user.status}
+                    </Badge>
+                  </Box>
+                </HStack>
+              </DialogActionTrigger>
+              ))
+          ) : ( <p>Tidak ada user</p> ) }
+          
         </DialogBody>
         <DialogFooter/>
       </DialogContent>

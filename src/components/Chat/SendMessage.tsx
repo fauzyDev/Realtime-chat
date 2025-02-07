@@ -1,8 +1,7 @@
 import React from 'react';
-import { Input } from "@chakra-ui/react";
+import { Textarea } from '@chakra-ui/react';
 import { Button } from "../ui/button";
 import { LuSendHorizontal } from "react-icons/lu";
-
 
 interface User {
   id: number;
@@ -66,9 +65,10 @@ const SendMessage: React.FC<SendMessageProps> = ({ newMessage, currentUser, setM
 
   return (
     <>
-      <Input
+      <Textarea
         p={4}
-        variant="outline"
+        size="sm"
+        variant="subtle"
         css={{ "--focus-color": "lime" }}
         placeholder={`Ketik pesan ${currentUser ? `ke ${currentUser.name}` : "ke Semua"}`}
         value={newMessage}

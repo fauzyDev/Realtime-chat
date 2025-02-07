@@ -2,7 +2,7 @@
 
 import React from "react";
 import {
-  Box,
+  // Box,
   Text,
   VStack,
   HStack,
@@ -47,12 +47,12 @@ const Chat: React.FC<ChatProps> = ({ users, messages, currentUser }) => {
               : users.find((u) => u.id === message.sender_id) || { name: "y", avatar: "x" }; 
 
         return (
-          <HStack key={message.id} align="start" gap={3} p={3} rounded="md" shadow="lg">
+          <HStack key={message.id} align="start" gap={3} p={3} rounded="md">
             {/* Avatar di sebelah kiri */}
             <Avatar name={sender.name} src={sender.avatar} size="sm" />
 
             {/* Konten pesan */}
-            <Box>
+            <ul className="bg-white border border-gray-200 rounded-2xl p-4 space-y-3 dark:bg-neutral-900 dark:border-neutral-700">
               <Text fontSize="sm" fontWeight="bold">
                 {sender.name}{" "}
               <Text as="span" fontWeight="normal" color="gray.500">
@@ -64,7 +64,7 @@ const Chat: React.FC<ChatProps> = ({ users, messages, currentUser }) => {
                 </Text>
               </Text>
                 <Text>{message.text}</Text>
-              </Box>
+              </ul>
               </HStack>
               );
               })
