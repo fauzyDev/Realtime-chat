@@ -66,7 +66,8 @@ const SendMessage: React.FC<SendMessageProps> = ({ newMessage, currentUser, setM
   return (
     <>
       <Textarea
-        p={4}
+        autoresize
+        p={2}
         size="sm"
         variant="subtle"
         css={{ "--focus-color": "lime" }}

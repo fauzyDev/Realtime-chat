@@ -4,13 +4,14 @@ import React from "react";
 import dynamic from "next/dynamic";
 import { Flex } from "@chakra-ui/react";
 import Header from "../Header/Header";
-import Sidebars from "../Sidebar/Sidebars";
+// import Sidebars from "../Sidebar/Sidebars";
 import SelectUser from "../Modal/SelectUser";
 import SendMessage from "../Chat/SendMessage";
 import { supabase } from "@/libs/supabase";
 import { useSession } from "next-auth/react"
 
 const Chat = dynamic(() => import("@/components/Chat/Chat"), { ssr: false })
+const Sidebars = dynamic(() => import("../Sidebar/Sidebars"), { ssr: true })
 
 interface User {
   id: number;
@@ -128,6 +129,7 @@ export default function Home() {
     {/* Sidebar */}
     <Flex flex="1" direction="row" overflow="hidden">
       <Sidebars 
+        session={session}
         users={filterUsers} 
         messages={messages} 
         modal={<SelectUser users={filterUsers} onUserSelect={handleUserSelect}/>} 
