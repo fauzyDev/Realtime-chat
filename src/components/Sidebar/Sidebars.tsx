@@ -60,10 +60,10 @@ const Sidebars: React.FC<SidebarProps> = ({ session, users, messages, modal, set
   return (
     <>
       {/* Sidebar untuk Desktop */}
-      <Box display={{ base: "none", md: "block" }} w="25%" p={4} shadow="lg" rounded="md" mr={4}>
+      <Box display={{ base: "none", md: "block" }} w="18%" p={4} shadow="lg" rounded="md" mr={4}>
         {session ? <>
           {modal}
-          <Text fontWeight="semibold" className="mb-5">History Chat</Text>
+          <Text textStyle="sm" fontWeight="semibold" className="mb-5">History Chat</Text>
           <VStack align="stretch">
             {chatHistory.length > 0 ?
               (chatHistory.map((user) => (
@@ -73,9 +73,9 @@ const Sidebars: React.FC<SidebarProps> = ({ session, users, messages, modal, set
                   rounded="md"
                   _hover={{ bg: "gray.300", cursor: "pointer", color: "black" }}
                   onClick={() => setCurrentUser(user)}>
-                  <Avatar name={user.name} src={user.avatar} />
+                  <Avatar size="sm" name={user.name} src={user.avatar} />
                   <Box>
-                    <Text fontWeight="bold">{user.name}</Text>
+                    <Text textStyle="sm" fontWeight="bold">{user.name}</Text>
                     <Badge colorPalette={user.status === "online" ? "green" : user.status === "mengetik..." ? "yellow" : "gray"}>
                       {user.status}
                     </Badge>
