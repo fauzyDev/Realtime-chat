@@ -147,7 +147,7 @@ export default function Home() {
         </Flex>
           
     {/* Message Input */}
-    <Flex mb={2} shadow="sm" align="center" justify="center">
+    <Flex mb={2} shadow="sm" align="center" justify="center" p={3}>
         <SendMessage 
           messages={messages} 
           newMessage={newMessage} 

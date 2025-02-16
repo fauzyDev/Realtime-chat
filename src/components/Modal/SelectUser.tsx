@@ -33,7 +33,7 @@ const SelectUser: React.FC<ModalProps> = ({ users, onUserSelect }) => {
     <DialogRoot scrollBehavior="inside" size="xs">
       {/* Trigger untuk membuka modal */}
       <DialogTrigger asChild>        
-        <Button bg="green" color="white" w="full" fontWeight="semibold" mb={4}>
+        <Button bg="green.500" size="xs" color="white" w="full" fontWeight="semibold" mb={4}>
             <LuMessageCirclePlus />
             Chat Baru
         </Button>

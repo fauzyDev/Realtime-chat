@@ -62,6 +62,10 @@ const Sidebars: React.FC<SidebarProps> = ({ session, users, messages, modal, set
       {/* Sidebar untuk Desktop */}
       <Box display={{ base: "none", md: "block" }} w="18%" p={4} shadow="lg" rounded="md" mr={4}>
         {session ? <>
+          <Button onClick={() => setCurrentUser(null)} size="xs" mt={1} w="full" bg="blue.500" color="white" fontWeight="semibold" mb={4}>
+              <FiMessageSquare />
+              All Chat
+            </Button>
           {modal}
           <Text textStyle="sm" fontWeight="semibold" className="mb-5">History Chat</Text>
           <VStack align="stretch">
@@ -73,10 +77,10 @@ const Sidebars: React.FC<SidebarProps> = ({ session, users, messages, modal, set
                   rounded="md"
                   _hover={{ bg: "gray.300", cursor: "pointer", color: "black" }}
                   onClick={() => setCurrentUser(user)}>
-                  <Avatar size="sm" name={user.name} src={user.avatar} />
+                  <Avatar size="xs" name={user.name} src={user.avatar} />
                   <Box>
                     <Text textStyle="sm" fontWeight="bold">{user.name}</Text>
-                    <Badge colorPalette={user.status === "online" ? "green" : user.status === "mengetik..." ? "yellow" : "gray"}>
+                    <Badge size="xs" colorPalette={user.status === "online" ? "green" : user.status === "mengetik..." ? "yellow" : "gray"}>
                       {user.status}
                     </Badge>
                   </Box>
@@ -85,11 +89,7 @@ const Sidebars: React.FC<SidebarProps> = ({ session, users, messages, modal, set
               ) : (
                 <Text className="text-center mb-10">Tidak Ada</Text>
               )}
-            <Button onClick={() => setCurrentUser(null)} mt={4} w="full" bg="blue" color="white" fontWeight="semibold">
-              <FiMessageSquare />
-              All Chat
-            </Button>
-            <Link href="/api/auth/signout" className="bg-slate-600 font-semibold px-4 py-2 text-center text-white">
+            <Link href="/api/auth/signout" className="bg-gray-500 font-semibold py-1 text-center text-white">
               Logout
             </Link>
           </VStack>
