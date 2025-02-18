@@ -25,23 +25,23 @@ interface User {
 interface ModalProps {
   users: User[];
   onUserSelect: (user: User) => void;
- 
+
 }
 
 const SelectUser: React.FC<ModalProps> = ({ users, onUserSelect }) => {
   return (
     <DialogRoot scrollBehavior="inside" size="xs">
       {/* Trigger untuk membuka modal */}
-      <DialogTrigger asChild>        
+      <DialogTrigger asChild>
         <Button bg="green.500" size="xs" color="white" w="full" fontWeight="semibold" mb={4}>
-            <LuMessageCirclePlus />
-            Chat Baru
+          <LuMessageCirclePlus />
+          Chat Baru
         </Button>
       </DialogTrigger>
 
       {/* Modal Konten */}
       <DialogContent>
-        <DialogCloseTrigger asChild/>
+        <DialogCloseTrigger asChild />
 
         <DialogHeader>
           <DialogTitle>Pilih User</DialogTitle>
@@ -52,26 +52,26 @@ const SelectUser: React.FC<ModalProps> = ({ users, onUserSelect }) => {
           {users.length > 0 ? (
             users.map((user) => (
               <DialogActionTrigger asChild key={user.id}>
-                <HStack 
+                <HStack
                   gap={4}
                   p={2}
                   rounded="md"
                   _hover={{ bg: "gray.300", cursor: "pointer", color: "black" }}
                   onClick={() => onUserSelect(user)}>
                   <Avatar name={user.name} src={user.avatar} />
-                <Box>
-                  <Text fontWeight="bold">{user.name}</Text>
+                  <Box>
+                    <Text fontWeight="bold">{user.name}</Text>
                     <Badge colorPalette={user.status === "online" ? "green" : user.status === "mengetik..." ? "yellow" : "gray"}>
                       {user.status}
                     </Badge>
                   </Box>
                 </HStack>
               </DialogActionTrigger>
-              ))
-          ) : ( <p>Tidak ada user</p> ) }
-          
+            ))
+          ) : (<p>Tidak ada user</p>)}
+
         </DialogBody>
-        <DialogFooter/>
+        <DialogFooter />
       </DialogContent>
     </DialogRoot>
   );

@@ -2,7 +2,7 @@
 
 import React from "react";
 import {
-  // Box,
+  List,
   Text,
   VStack,
   HStack,
@@ -22,7 +22,7 @@ interface Message {
   timestamp: Date;
 }
 
-interface ChatProps{
+interface ChatProps {
   messages: Message[];
   currentUser: User | null;
   users: User[];
@@ -30,12 +30,12 @@ interface ChatProps{
 const Chat: React.FC<ChatProps> = ({ users, messages, currentUser }) => {
 
   // Filter pesan berdasarkan pengguna yang sedang di-chat
-  const filteredMessages = currentUser ? 
-      messages.filter(
-        (msg) =>
-          (msg.sender_id === currentUser.id && msg.receiver_id !== null ) || // Pesan dari user ke "You"
-          (msg.receiver_id === currentUser.id) // Pesan dari "You" ke user
-      ) : messages.filter((msg) => msg.receiver_id === null); // All-chat
+  const filteredMessages = currentUser ?
+    messages.filter(
+      (msg) =>
+        (msg.sender_id === currentUser.id && msg.receiver_id !== null) || // Pesan dari user ke "You"
+        (msg.receiver_id === currentUser.id) // Pesan dari "You" ke user
+    ) : messages.filter((msg) => msg.receiver_id === null); // All-chat
 
   return (
     <>
@@ -44,31 +44,31 @@ const Chat: React.FC<ChatProps> = ({ users, messages, currentUser }) => {
           filteredMessages.map((message) => {
             const sender = message.sender_id === currentUser?.id
               ? { name: "y", avatar: "x" }
-              : users.find((u) => u.id === message.sender_id) || { name: "y", avatar: "x" }; 
+              : users.find((u) => u.id === message.sender_id) || { name: "y", avatar: "x" };
 
-        return (
-          <HStack key={message.id} align="start" gap={3} p={3} rounded="md">
-            {/* Avatar di sebelah kiri */}
-            <Avatar name={sender.name} src={sender.avatar} size="sm" />
+            return (
+              <HStack key={message.id} align="start" gap={3} p={3} rounded="md">
+                {/* Avatar di sebelah kiri */}
+                <Avatar name={sender.name} src={sender.avatar} size="sm" />
 
-            {/* Konten pesan */}
-            <ul className="bg-white border border-gray-200 rounded-2xl p-4 space-y-3 dark:bg-neutral-900 dark:border-neutral-700">
-              <Text fontSize="sm" fontWeight="bold">
-                {sender.name}{" "}
-              <Text as="span" fontWeight="normal" color="gray.500">
-               ({message.timestamp instanceof Date ? message.timestamp.toLocaleTimeString("jkt-ID", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: false
-                }) : "Waktu tidak ada"})
-                </Text>
-              </Text>
-                <Text>{message.text}</Text>
-              </ul>
+                {/* Konten pesan */}
+                <List.Root bg="gray.700" maxWidth={{ sm: "60%", md: "50%" }} wordBreak="break-word" className="border border-gray-200 rounded-2xl p-4 space-y-3  dark:border-neutral-600/65">
+                  <Text fontSize="sm" fontWeight="bold">
+                    {sender.name}{" "}
+                    <Text as="span" fontWeight="normal" color="gray.500">
+                      ({message.timestamp instanceof Date ? message.timestamp.toLocaleTimeString("jkt-ID", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false
+                      }) : "Waktu tidak ada"})
+                    </Text>
+                  </Text>
+                  <Text>{message.text}</Text>
+                </List.Root>
               </HStack>
-              );
-              })
-            ) : (
+            );
+          })
+        ) : (
           <Text>Tidak ada pesan silahkan kirm pesan</Text>
         )}
       </VStack>

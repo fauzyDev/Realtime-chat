@@ -36,6 +36,7 @@ interface Message {
   timestamp: Date;
 }
 interface SidebarProps {
+  logout: React.ReactNode
   session: Session | null;
   users: User[];
   messages: Message[];
@@ -46,7 +47,7 @@ interface SidebarProps {
   modal: React.ReactNode
 }
 
-const Sidebars: React.FC<SidebarProps> = ({ session, users, messages, modal, setCurrentUser, isOpen, onClose, onOpen }) => {
+const Sidebars: React.FC<SidebarProps> = ({ session, logout, users, messages, modal, setCurrentUser, isOpen, onClose, onOpen }) => {
 
   // Filter user dengan history chat
   const chatHistory = users.filter((user) =>
@@ -63,9 +64,9 @@ const Sidebars: React.FC<SidebarProps> = ({ session, users, messages, modal, set
       <Box display={{ base: "none", md: "block" }} w="18%" p={4} shadow="lg" rounded="md" mr={4}>
         {session ? <>
           <Button onClick={() => setCurrentUser(null)} size="xs" mt={1} w="full" bg="blue.500" color="white" fontWeight="semibold" mb={4}>
-              <FiMessageSquare />
-              All Chat
-            </Button>
+            <FiMessageSquare />
+            <Text textStyle="sm">All Chat</Text>
+          </Button>
           {modal}
           <Text textStyle="sm" fontWeight="semibold" className="mb-5">History Chat</Text>
           <VStack align="stretch">
@@ -89,9 +90,7 @@ const Sidebars: React.FC<SidebarProps> = ({ session, users, messages, modal, set
               ) : (
                 <Text className="text-center mb-10">Tidak Ada</Text>
               )}
-            <Link href="/api/auth/signout" className="bg-gray-500 font-semibold py-1 text-center text-white">
-              Logout
-            </Link>
+            {logout}
           </VStack>
         </> :
           <Link href="/api/auth/signin" className="bg-slate-600 font-semibold px-4 py-2 text-center text-white">

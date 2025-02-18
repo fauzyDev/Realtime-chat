@@ -9,21 +9,23 @@ import { ColorModeToggle } from "@/components/ui/color-mode";
 import { Spin as Hamburger } from 'hamburger-react'
 import { Button } from "../ui/button";
 import { Avatar } from "@/components/ui/avatar";
+import { Session } from 'next-auth';
 
 interface User {
   id: number;
   name: string;
-  avatar: string; 
-  status: string; 
+  avatar: string;
+  status: string;
 }
 
 interface HeaderProps {
-  currentUser: User | null;
+  session: Session | null;
+  currentUser: User | null | undefined;
   isSidebarOpen: boolean;
   setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const Header: React.FC<HeaderProps> = ({ currentUser, isSidebarOpen, setSidebarOpen }) => {
+const Header: React.FC<HeaderProps> = ({ session, currentUser, isSidebarOpen, setSidebarOpen }) => {
   return (
     <>
       <Button
@@ -40,7 +42,7 @@ const Header: React.FC<HeaderProps> = ({ currentUser, isSidebarOpen, setSidebarO
           Realtime - All Chat
         </Text>
       )}
-      {currentUser && (
+      {session && currentUser && (
         <HStack gap={4}>
           <Avatar name={currentUser.name} src={currentUser.avatar} size="sm" />
           <VStack align="start" gap={0}>

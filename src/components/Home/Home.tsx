@@ -1,17 +1,16 @@
 "use client"
 
 import React from "react";
-import dynamic from "next/dynamic";
-import { Flex } from "@chakra-ui/react";
 import Header from "../Header/Header";
-// import Sidebars from "../Sidebar/Sidebars";
+import Sidebars from "../Sidebar/Sidebars";
 import SelectUser from "../Modal/SelectUser";
 import SendMessage from "../Chat/SendMessage";
+import Chat from "@/components/Chat/Chat";
+import { Button } from "../ui/button";
+import { Flex } from "@chakra-ui/react";
 import { supabase } from "@/libs/supabase";
-import { useSession } from "next-auth/react"
-
-const Chat = dynamic(() => import("@/components/Chat/Chat"), { ssr: false })
-const Sidebars = dynamic(() => import("../Sidebar/Sidebars"), { ssr: true })
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 interface User {
   id: number;
@@ -29,57 +28,103 @@ interface Message {
 }
 
 export default function Home() {
-    const { data: session } = useSession()
-    const [messages, setMessages] = React.useState<Message[]>([]);
-    const [newMessage, setNewMessage] = React.useState<string>("");
-    const [users, setUsers] = React.useState<User[]>([])
-    const [currentUser, setCurrentUser] = React.useState<User | null>(null); // User yang sedang di-chat
-    const [isSidebarOpen, setSidebarOpen] = React.useState<boolean>(false);
+  const { data: session } = useSession()
+  const router = useRouter()
+  const [messages, setMessages] = React.useState<Message[]>([]);
+  const [users, setUsers] = React.useState<User[]>([])
+  const [currentUser, setCurrentUser] = React.useState<User | null>(null); // User yang sedang di-chat
+  const [isSidebarOpen, setSidebarOpen] = React.useState<boolean>(false);
 
-    // ambil data users 
-    const fetchUsers = async () => {
-      const { data, error } = await supabase
+  // ambil data users 
+  const fetchUsers = async () => {
+    const { data, error } = await supabase
       .from("users")
       .select()
 
-      if (error) {
-        console.error("Gagal", error)
-        return
-      }
+    if (error) {
+      console.error("Gagal", error)
+      return
+    } else {
       setUsers(data)
     }
+  }
 
-    // Dengarkan perubahan data status user secara realtime
-    React.useEffect(() => {
-      fetchUsers() // ambil users di awal
+  // Mengupdate status user ke online saat login
+  const updateStatusToOnline = async (userId: string) => {
+    const { data, error } = await supabase
+      .from('users')
+      .update({ status: 'online' })
+      .eq('id', userId);
 
-      const channel = supabase
-        .channel("users")
-        .on(
-          "postgres_changes",
-          { event: "UPDATE", schema: "public", table: "users" },
-          (payload) => {
-            console.log("User Status:", payload.new);
-            setUsers((prevUsers) => prevUsers.map((user) =>
-            user.id === payload.new.id ? { ...user, status: payload.new.status } : user ));
-          }
-        )
-        .subscribe();
-  
-      return () => {
-        supabase.removeChannel(channel);
-      };
-    }, [session?.user]);
+    if (error) {
+      console.error('Error updating status:', error);
+    }
+  };
 
-    // Ambil pesan awal saat pertama kali aplikasi dibuka
-    const fetchMessages = async () => {
+  // Dengarkan perubahan data status user secara realtime
+  React.useEffect(() => {
+    const currentSession = session?.user
+    if (typeof currentSession === "string") {
+      updateStatusToOnline(currentSession)
+    }
+
+    fetchUsers() // ambil users di awal
+
+    const channel = supabase
+      .channel("users")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "users" },
+        (payload) => {
+          const updateUser = payload.new as User
+          setUsers((prevUsers) => prevUsers.map((user) =>
+            user.id === updateUser.id ? { ...user, status: updateUser.status } : user));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [session]);
+
+  const handleLogout = async () => {
+    if (!session?.user) return;
+
+    await supabase
+      .from("users")
+      .update({ status: "offline" })
+      .eq("id", session.user);
+
+    router.push("/api/auth/signout")
+  };
+
+  React.useEffect(() => {
+    const handleUnload = async () => {
+      if (!session?.user) return;
+
+      await supabase
+        .from("users")
+        .update({ status: "offline" })
+        .eq("id", session.user);
+    };
+
+    window.addEventListener("beforeunload", handleUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleUnload);
+    };
+  }, [session?.user]);
+
+  // Ambil pesan awal saat pertama kali aplikasi dibuka
+  const fetchMessages = async () => {
     const { data, error } = await supabase
       .from("messages")
       .select("*")
       .order("created_at", { ascending: true });
 
     if (error) {
-      console.error("Gagal mengambil pesan:", error) 
+      console.error("Gagal mengambil pesan:", error)
       return
     }
     setMessages(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) })));
@@ -104,13 +149,13 @@ export default function Home() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [session?.user]);
+  }, [session]);
 
-    // fungsi untuk memilih user yang akan di chat 
-    const handleUserSelect = (user: User): void => {
-      setCurrentUser(user); // Simpan user yang dipilih
-      setSidebarOpen(false) // menutup sidebar
-    };
+  // fungsi untuk memilih user yang akan di chat 
+  const handleUserSelect = (user: User): void => {
+    setCurrentUser(user); // Simpan user yang dipilih
+    setSidebarOpen(false) // menutup sidebar
+  };
 
   // filter user berdasarkan session
   const currentUserId = session?.user;
@@ -118,45 +163,45 @@ export default function Home() {
 
   return (
     <Flex direction="column" w="100vw" h="100vh" bg="bg.subtle" p={4}>
-    {/* Header */}
-    <Flex as="header" justify="space-between" align="center" p={4} shadow="md" rounded="md" mb={4}>
-      <Header 
-        currentUser={currentUser} 
-        isSidebarOpen={isSidebarOpen} 
-        setSidebarOpen={setSidebarOpen}/>
+      {/* Header */}
+      <Flex as="header" justify="space-between" align="center" p={4} shadow="md" rounded="md" mb={4}>
+        <Header
+          session={session}
+          currentUser={users.find(user => user.id === currentUser?.id)}
+          isSidebarOpen={isSidebarOpen}
+          setSidebarOpen={setSidebarOpen} />
       </Flex>
 
-    {/* Sidebar */}
-    <Flex flex="1" direction="row" overflow="hidden">
-      <Sidebars 
-        session={session}
-        users={filterUsers} 
-        messages={messages} 
-        modal={<SelectUser users={filterUsers} onUserSelect={handleUserSelect}/>} 
-        setCurrentUser={setCurrentUser} 
-        isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} 
-        onOpen={() => setSidebarOpen(true)}/>
-
-    {/* Chat Area */}
-    <Flex flex="1" direction="column" shadow="md" rounded="md">
-      <Flex flex="1" direction="column" overflowY="auto" p={4}>
-        <Chat
-          users={users}
+      {/* Sidebar */}
+      <Flex flex="1" direction="row" overflow="hidden">
+        <Sidebars
+          logout={<Button onClick={handleLogout} className="bg-gray-500 font-semibold py-1 text-center text-white">Logout</Button>}
+          session={session}
+          users={filterUsers}
           messages={messages}
-          currentUser={currentUser}/> 
+          modal={<SelectUser users={filterUsers} onUserSelect={handleUserSelect} />}
+          setCurrentUser={setCurrentUser}
+          isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)}
+          onOpen={() => setSidebarOpen(true)} />
+
+        {/* Chat Area */}
+        <Flex flex="1" direction="column" shadow="md" rounded="md">
+          <Flex flex="1" direction="column" overflowY="auto" p={4}>
+            <Chat
+              users={users}
+              messages={messages}
+              currentUser={currentUser} />
+          </Flex>
+
+          {/* Message Input */}
+          <Flex mb={2} shadow="sm" align="center" justify="center" p={3}>
+            <SendMessage
+              session={session}
+              currentUser={users.find(user => user.id === currentUser?.id)}
+              setMessages={setMessages} />
+          </Flex>
         </Flex>
-          
-    {/* Message Input */}
-    <Flex mb={2} shadow="sm" align="center" justify="center" p={3}>
-        <SendMessage 
-          messages={messages} 
-          newMessage={newMessage} 
-          currentUser={currentUser} 
-          setMessages={setMessages}
-          setNewMessage={setNewMessage}/>
-        </Flex>
-      </Flex>  
+      </Flex>
     </Flex>
-  </Flex>
-  ) 
+  )
 }

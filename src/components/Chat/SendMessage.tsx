@@ -1,7 +1,8 @@
 import React from 'react';
-import { Textarea } from '@chakra-ui/react';
+import { Textarea } from "@chakra-ui/react"
 import { Button } from "../ui/button";
 import { LuSendHorizontal } from "react-icons/lu";
+import { Session } from 'next-auth';
 
 interface User {
   id: number;
@@ -19,17 +20,17 @@ interface Message {
 }
 
 interface SendMessageProps {
-  messages: Message[];
-  newMessage: string;
-  currentUser: User | null;
+  session: Session | null;
+  currentUser: User | null | undefined;
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
-  setNewMessage: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const SendMessage: React.FC<SendMessageProps> = ({ newMessage, currentUser, setMessages, setNewMessage }) => {
+const SendMessage: React.FC<SendMessageProps> = ({ session, currentUser, setMessages }) => {
+  const inputRef = React.useRef<HTMLTextAreaElement>(null);
 
   // Fungsi untuk mengirim pesan
-  const sendMessage = async () => {
+  const sendMessage = React.useCallback(async () => {
+    const newMessage = inputRef.current?.value;
     if (!newMessage || newMessage.trim() === "") return;
 
     try {
@@ -41,11 +42,11 @@ const SendMessage: React.FC<SendMessageProps> = ({ newMessage, currentUser, setM
           receiver_id: currentUser?.id ?? null, // Null untuk all-chat
         }),
       });
-  
+
       if (!response.ok) {
         throw new Error("Gagal mengirim pesan");
       }
-  
+
       const data = await response.json();
 
       const newMsg: Message = {
@@ -57,37 +58,40 @@ const SendMessage: React.FC<SendMessageProps> = ({ newMessage, currentUser, setM
       };
 
       setMessages((prev) => [...prev, newMsg]); // Tambahkan pesan baru ke daftar
-      setNewMessage(""); // Kosongkan input setelah mengirim
+      if (inputRef.current) inputRef.current.value = ""; // Kosongkan input setelah mengirim
     } catch (error) {
       console.error("Gagal mengirim pesan:", error);
     }
-  };
+  }, [currentUser, setMessages]);
 
   return (
     <>
-      <Textarea
-        autoresize
-        p={2}
-        size="sm"
-        variant="subtle"
-        css={{ "--focus-color": "lime" }}
-        placeholder={`Ketik pesan ${currentUser ? `ke ${currentUser.name}` : "ke Semua"}`}
-        value={newMessage}
-        onChange={(e) => setNewMessage(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-      />
+      {session && (
+        <>
+          <Textarea
+            autoresize
+            ref={inputRef}
+            p={2}
+            size="sm"
+            variant="subtle"
+            css={{ "--focus-color": "lime" }}
+            placeholder={`Ketik pesan ${currentUser ? `ke ${currentUser.name}` : "ke Semua"}`}
+            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+          />
 
-      <Button
-        ml={2}
-        px={3}
-        variant="solid"
-        bg="blue.500"
-        color="white"
-        rounded="md"
-        _hover={{ bg: "blue.600" }}
-        onClick={sendMessage}>
-        <LuSendHorizontal /> Send
-      </Button>
+          <Button
+            ml={2}
+            px={3}
+            variant="solid"
+            bg="blue.500"
+            color="white"
+            rounded="md"
+            _hover={{ bg: "blue.600" }}
+            onClick={sendMessage}>
+            <LuSendHorizontal /> Send
+          </Button>
+        </>
+      )}
     </>
   );
 };
