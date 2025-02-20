@@ -3,6 +3,7 @@ import { Textarea } from "@chakra-ui/react"
 import { Button } from "../ui/button";
 import { LuSendHorizontal } from "react-icons/lu";
 import { Session } from 'next-auth';
+import { supabase } from '@/libs/supabase';
 
 interface User {
   id: number;
@@ -27,6 +28,33 @@ interface SendMessageProps {
 
 const SendMessage: React.FC<SendMessageProps> = ({ session, currentUser, setMessages }) => {
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
+  const typingTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const broadcast = supabase.channel("typing-status");
+
+  const handleTyping = () => {
+    if (!inputRef.current || !currentUser) return;
+
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    console.log("Mengirim status mengetik...");
+    // Kirim event "mengetik"
+    broadcast.send({
+      type: "broadcast",
+      event: "mengetik",
+      payload: { userId: session?.user },
+    });
+    console.log("📡 Event mengetik dikirim dengan payload:", { userId: session?.user });
+    // Set timeout untuk menghapus status mengetik jika user berhenti mengetik dalam 2 detik
+    typingTimeoutRef.current = setTimeout(() => {
+      console.log("Mengirim status berhenti mengetik...");
+      broadcast.send({
+        type: "broadcast",
+        event: "stopped_typing",
+        payload: { userId: session?.user },
+      });
+    }, 2000);
+  };
 
   // Fungsi untuk mengirim pesan
   const sendMessage = React.useCallback(async () => {
@@ -76,6 +104,7 @@ const SendMessage: React.FC<SendMessageProps> = ({ session, currentUser, setMess
             variant="subtle"
             css={{ "--focus-color": "lime" }}
             placeholder={`Ketik pesan ${currentUser ? `ke ${currentUser.name}` : "ke Semua"}`}
+            onChange={handleTyping}
             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
           />
 

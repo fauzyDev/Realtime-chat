@@ -88,6 +88,36 @@ export default function Home() {
     };
   }, [session]);
 
+  React.useEffect(() => {
+    const channel = supabase.channel("typing-status");
+  
+    // Mendengarkan event "mengetik"
+    channel.on("broadcast", { event: "mengetik" }, (payload) => {
+      
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === payload.payload.userId ? { ...user, status: "mengetik..." } : user
+        )
+      );
+    });
+  
+    // Mendengarkan event "stopped_typing"
+    channel.on("broadcast", { event: "stopped_typing" }, (payload) => {
+            
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === payload.payload.userId ? { ...user, status: "online" } : user
+        )
+      );
+    });
+  
+    channel.subscribe();
+  
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const handleLogout = async () => {
     if (!session?.user) return;
 
@@ -197,7 +227,7 @@ export default function Home() {
           <Flex mb={2} shadow="sm" align="center" justify="center" p={3}>
             <SendMessage
               session={session}
-              currentUser={users.find(user => user.id === currentUser?.id)}
+              currentUser={currentUser}
               setMessages={setMessages} />
           </Flex>
         </Flex>
