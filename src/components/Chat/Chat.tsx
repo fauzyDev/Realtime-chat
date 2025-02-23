@@ -35,7 +35,7 @@ const Chat: React.FC<ChatProps> = ({ users, messages, currentUser }) => {
       (msg) =>
         (msg.sender_id === currentUser.id && msg.receiver_id !== null) || // Pesan dari user ke "You"
         (msg.receiver_id === currentUser.id) // Pesan dari "You" ke user
-    ) : messages.filter((msg) => msg.receiver_id === null); // All-chat
+    ) : messages.filter( (msg) => msg.receiver_id === null); // All-chat
 
   return (
     <>
@@ -43,8 +43,8 @@ const Chat: React.FC<ChatProps> = ({ users, messages, currentUser }) => {
         {filteredMessages.length > 0 ? (
           filteredMessages.map((message) => {
             const sender = message.sender_id === currentUser?.id
-              ? { name: "y", avatar: "x" }
-              : users.find((u) => u.id === message.sender_id) || { name: "y", avatar: "x" };
+              ? { name: "you", avatar: currentUser.avatar }
+              : users.find((u) => u.id === message.sender_id) || { name: "you", avatar: currentUser?.avatar };
 
             return (
               <HStack key={message.id} align="start" gap={3} p={3} rounded="md">

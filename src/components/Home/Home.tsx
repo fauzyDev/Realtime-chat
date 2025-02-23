@@ -51,7 +51,7 @@ export default function Home() {
 
   // Mengupdate status user ke online saat login
   const updateStatusToOnline = async (userId: string) => {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('users')
       .update({ status: 'online' })
       .eq('id', userId);
