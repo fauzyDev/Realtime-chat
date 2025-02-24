@@ -33,9 +33,11 @@ const Chat: React.FC<ChatProps> = ({ users, messages, currentUser }) => {
   const filteredMessages = currentUser ?
     messages.filter(
       (msg) =>
-        (msg.sender_id === currentUser.id && msg.receiver_id !== null) || // Pesan dari user ke "You"
-        (msg.receiver_id === currentUser.id) // Pesan dari "You" ke user
+        (msg.sender_id === currentUser.id && msg.receiver_id) || // Pesan dari user ke penerima
+        (msg.receiver_id === currentUser.id) // Pesan dari penerima ke user
     ) : messages.filter( (msg) => msg.receiver_id === null); // All-chat
+
+    const allChat = filteredMessages.every((msg) => msg.receiver_id === null)
 
   return (
     <>
@@ -43,18 +45,20 @@ const Chat: React.FC<ChatProps> = ({ users, messages, currentUser }) => {
         {filteredMessages.length > 0 ? (
           filteredMessages.map((message) => {
             const sender = message.sender_id === currentUser?.id
-              ? { name: "you", avatar: currentUser.avatar }
-              : users.find((u) => u.id === message.sender_id) || { name: "you", avatar: currentUser?.avatar };
+        
+            const isUser = sender
+              ? { name: currentUser?.name, avatar: currentUser?.avatar }
+              : users.find((u) => u.id === message.sender_id) || { name: currentUser?.name, avatar: currentUser?.avatar };
 
             return (
-              <HStack key={message.id} align="start" gap={3} p={3} rounded="md">
+              <HStack key={message.id} align="start" gap={3} p={3} rounded="md" justifyContent={ sender ? "flex-end" : "flex-start"}>
                 {/* Avatar di sebelah kiri */}
-                <Avatar name={sender.name} src={sender.avatar} size="sm" />
+                {!sender && <Avatar name={isUser.name} src={isUser.avatar} size="sm" /> }
 
                 {/* Konten pesan */}
-                <List.Root bg="gray.700" maxWidth={{ sm: "60%", md: "50%" }} wordBreak="break-word" className="border border-gray-200 rounded-2xl p-4 space-y-3  dark:border-neutral-600/65">
+                <List.Root bg={sender ? "blue.600" : "gray.700"} maxWidth={{ sm: "60%", md: "50%" }} wordBreak="break-word" className="border border-gray-200 rounded-2xl p-4 space-y-3  dark:border-neutral-600/65">
                   <Text fontSize="sm" fontWeight="bold">
-                    {sender.name}{" "}
+                    {isUser.name}
                     <Text as="span" fontWeight="normal" color="gray.500">
                       ({message.timestamp instanceof Date ? message.timestamp.toLocaleTimeString("jkt-ID", {
                         hour: "2-digit",
@@ -65,6 +69,7 @@ const Chat: React.FC<ChatProps> = ({ users, messages, currentUser }) => {
                   </Text>
                   <Text>{message.text}</Text>
                 </List.Root>
+                {sender && !allChat && <Avatar name={isUser.name} src={isUser.avatar} size="sm" /> }
               </HStack>
             );
           })
