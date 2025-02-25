@@ -218,6 +218,7 @@ export default function Home() {
         <Flex flex="1" direction="column" shadow="md" rounded="md">
           <Flex flex="1" direction="column" overflowY="auto" p={4}>
             <Chat
+              session={session}
               users={users}
               messages={messages}
               currentUser={currentUser} />

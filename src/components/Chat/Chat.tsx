@@ -45,7 +45,11 @@ const Chat: React.FC<ChatProps> = ({ session, users, messages, currentUser }) =>
       <VStack align="stretch" flex="1" overflowY="auto" p={4} gap={4}>
         {filteredMessages.length > 0 ? (
           filteredMessages.map((message) => {
-            const sender = message.sender_id === session?.user
+            const sender = message.sender_id === currentUser?.id
+
+            console.log("Pengirim (message.sender_id):", message.sender_id);
+  console.log("Penerima (message.receiver_id):", message.receiver_id);
+  console.log("Current User (currentUser.id):", currentUser?.id);
         
             const isUser = sender
               ? { name: currentUser?.name, avatar: currentUser?.avatar }
