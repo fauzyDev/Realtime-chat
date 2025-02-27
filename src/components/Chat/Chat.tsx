@@ -46,17 +46,18 @@ const Chat: React.FC<ChatProps> = ({ session, users, messages, currentUser }) =>
           filteredMessages.map((message) => {
             const sender = message.sender_id === session?.user
             
-        
-            const isUser = sender
-              ? { name: session?.user?.name, avatar: session?.user?.image }
-              : users.find((u) => u.id === message.sender_id) || { name: session?.user?.name, avatar: session?.user?.image };
-              console.log("isUser:", isUser);
+            const senderUser = users.find((u) => u.id === message.sender_id) || null;
+            const receiverUser = users.find((u) => u.id === message.receiver_id) || null;
+
+            const isUser = senderUser ?? receiverUser ?? { name: "", avatar: undefined }
+             
             return (
-              <HStack key={message.id} align="start" gap={3} p={3} rounded="md" justifyContent={sender ? "flex-end" : allChat ? "flex-start" : "flex-start"}>
+              <HStack key={message.id} align="start" gap={3} p={3} rounded="md" justifyContent={allChat ? "flex-start" : sender ? "flex-end" : "flex-start"}>
                 {/* sender avatar di sebelah kiri */}
-                {sender && <Avatar name={isUser.name ?? undefined} src={isUser.avatar ?? undefined} size="sm" /> }
+                {allChat || !sender ? ( <Avatar name={isUser.name ?? undefined} src={isUser.avatar ?? undefined} size="sm" /> )  : null}
+                {/* {!allChat || sender ? ( <Avatar name={isUser.name ?? undefined} src={isUser.avatar ?? undefined} size="sm" /> ) : null} */}
                 {/* Konten pesan */}
-                <List.Root bg={sender ? "blue.600" : "gray.700"} maxWidth={{ sm: "60%", md: "50%" }} wordBreak="break-word" className="border border-gray-200 rounded-2xl p-4 space-y-3  dark:border-neutral-600/65">
+                <List.Root bg={allChat ? "gray.700" : sender ? "blue.600" : "gray.700"} maxWidth={{ sm: "60%", md: "50%" }} wordBreak="break-word" className="border border-gray-200 rounded-2xl p-4 space-y-3  dark:border-neutral-600/65">
                   <Text fontSize="sm" fontWeight="bold">
                     {isUser.name}
                     <Text as="span" fontWeight="normal" color="gray.500">
@@ -70,7 +71,7 @@ const Chat: React.FC<ChatProps> = ({ session, users, messages, currentUser }) =>
                   <Text>{message.text}</Text>
                 </List.Root>
                   {/* receiver avatar di sebelah kanan */}
-                {!sender && !allChat && <Avatar name={isUser.name ?? ""} src={isUser.avatar ?? ""} size="sm" /> }
+                  {sender && !allChat && <Avatar name={isUser.name ?? undefined} src={isUser.avatar ?? undefined} size="sm" /> }
               </HStack>
             );
           })
