@@ -90,29 +90,29 @@ export default function Home() {
 
   React.useEffect(() => {
     const channel = supabase.channel("typing-status");
-  
+
     // Mendengarkan event "mengetik"
     channel.on("broadcast", { event: "mengetik" }, (payload) => {
-      
+
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
           user.id === payload.payload.userId ? { ...user, status: "mengetik..." } : user
         )
       );
     });
-  
+
     // Mendengarkan event "stopped_typing"
     channel.on("broadcast", { event: "stopped_typing" }, (payload) => {
-            
+
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
           user.id === payload.payload.userId ? { ...user, status: "online" } : user
         )
       );
     });
-  
+
     channel.subscribe();
-  
+
     return () => {
       supabase.removeChannel(channel);
     };
@@ -216,7 +216,13 @@ export default function Home() {
 
         {/* Chat Area */}
         <Flex flex="1" direction="column" shadow="md" rounded="md">
-          <Flex flex="1" direction="column" overflowY="auto" p={4}>
+          <Flex flex="1" className="[&::-webkit-scrollbar]:w-2
+  [&::-webkit-scrollbar-track]:rounded-full
+  [&::-webkit-scrollbar-track]:bg-gray-100
+  [&::-webkit-scrollbar-thumb]:rounded-full
+  [&::-webkit-scrollbar-thumb]:bg-gray-300
+  dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+  dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500" direction="column" overflowY="auto" p={4}>
             <Chat
               session={session}
               users={users}

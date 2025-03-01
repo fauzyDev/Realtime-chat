@@ -63,7 +63,7 @@ const Sidebars: React.FC<SidebarProps> = ({ session, logout, users, messages, mo
       {/* Sidebar untuk Desktop */}
       <Box display={{ base: "none", md: "block" }} w="18%" p={4} shadow="lg" rounded="md" mr={4}>
         {session ? <>
-          <Button onClick={() => setCurrentUser(null)} size="xs" mt={1} w="full" bg="blue.500" color="white" fontWeight="semibold" mb={4}>
+          <Button onClick={() => setCurrentUser(null)} size="xs" mt={1} w="full" bg="blue.500" _hover={{ bg: "blue.700", cursor: "pointer", color: "white" }} color="white" fontWeight="semibold" mb={4}>
             <FiMessageSquare />
             <Text textStyle="sm">All Chat</Text>
           </Button>
@@ -104,44 +104,48 @@ const Sidebars: React.FC<SidebarProps> = ({ session, logout, users, messages, mo
         <HStack wrap="wrap">
           <For each={["start"]}>
             {(placement) => (
-              <DrawerRoot key={placement} placement={placement} open={isOpen} onOpenChange={(e) => (e.open ? onOpen() : onClose())}>
+              <DrawerRoot key={placement} placement={placement} size="xs" open={isOpen} onOpenChange={(e) => (e.open ? onOpen() : onClose())}>
                 <DrawerBackdrop />
                 <DrawerContent>
                   <DrawerHeader>
                     <DrawerTitle fontWeight="semibold" fontSize="xl">Realtime Chat</DrawerTitle>
                   </DrawerHeader>
                   <DrawerBody>
-                    {modal}
-                    <Text fontWeight="semibold" mb="3">History Chat</Text>
-                    <VStack align="stretch" gap={4} onClick={onClose}>
-                      {chatHistory.length > 0 ?
-                        (chatHistory.map((user) => (
-                          <HStack key={user.id}
-                            gap={4}
-                            p={2}
-                            rounded="md"
-                            _hover={{ bg: "gray.300", cursor: "pointer", color: "black" }}
-                            onClick={() => setCurrentUser(user)}>
-                            <Avatar name={user.name} src={user.avatar} />
-                            <Box>
-                              <Text fontWeight="bold">{user.name}</Text>
-                              <Badge colorPalette={user.status === "online" ? "green" : "yellow"}>
-                                {user.status}
-                              </Badge>
-                            </Box>
-                          </HStack>
-                        ))
-                        ) : (
-                          <Text className="text-center mb-10">Tidak Ada</Text>
-                        )}
-                      <Button onClick={() => setCurrentUser(null)} mt={4} w="full" bg="blue" color="white" fontWeight="semibold">
+                    {session ? <>
+                      <Button onClick={() => setCurrentUser(null)} size="xs" mt={1} w="full" bg="blue.500" color="white" fontWeight="semibold" mb={4}>
                         <FiMessageSquare />
-                        All Chat
+                        <Text textStyle="sm">All Chat</Text>
                       </Button>
+                      {modal}
+                      <Text textStyle="sm" fontWeight="semibold" className="mb-5">History Chat</Text>
+                      <VStack align="stretch">
+                        {chatHistory.length > 0 ?
+                          (chatHistory.map((user) => (
+                            <HStack key={user.id}
+                              gap={4}
+                              p={2}
+                              rounded="md"
+                              _hover={{ bg: "gray.300", cursor: "pointer", color: "black" }}
+                              onClick={() => setCurrentUser(user)}>
+                              <Avatar size="xs" name={user.name} src={user.avatar} />
+                              <Box>
+                                <Text textStyle="sm" fontWeight="bold">{user.name}</Text>
+                                <Badge size="xs" colorPalette={user.status === "online" ? "green" : user.status === "mengetik..." ? "yellow" : "gray"}>
+                                  {user.status}
+                                </Badge>
+                              </Box>
+                            </HStack>
+                          ))
+                          ) : (
+                            <Text className="text-center mb-10">Tidak Ada</Text>
+                          )}
+                        {logout}
+                      </VStack>
+                    </> :
                       <Link href="/api/auth/signin" className="bg-slate-600 font-semibold px-4 py-2 text-center text-white">
                         Login
                       </Link>
-                    </VStack>
+                    }
                   </DrawerBody>
                   <DrawerCloseTrigger />
                 </DrawerContent>

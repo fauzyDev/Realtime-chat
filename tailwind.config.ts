@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
-import preline from "preline/plugin"
+import preline from "preline/plugin";
+import tailwindScrollbar from "tailwind-scrollbar";
 
 export default {
   content: [
@@ -17,6 +18,7 @@ export default {
     },
   },
   plugins: [
-    preline
+    preline,
+    tailwindScrollbar
   ],
 } satisfies Config;

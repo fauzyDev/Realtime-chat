@@ -1,5 +1,5 @@
 import React from 'react';
-import { Textarea } from "@chakra-ui/react"
+import { Flex, Textarea, Container } from "@chakra-ui/react"
 import { Button } from "../ui/button";
 import { LuSendHorizontal } from "react-icons/lu";
 import { Session } from 'next-auth';
@@ -37,17 +37,16 @@ const SendMessage: React.FC<SendMessageProps> = ({ session, currentUser, setMess
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
-    console.log("Mengirim status mengetik...");
+    
     // Kirim event "mengetik"
     broadcast.send({
       type: "broadcast",
       event: "mengetik",
       payload: { userId: session?.user },
     });
-    console.log("📡 Event mengetik dikirim dengan payload:", { userId: session?.user });
+    
     // Set timeout untuk menghapus status mengetik jika user berhenti mengetik dalam 2 detik
     typingTimeoutRef.current = setTimeout(() => {
-      console.log("Mengirim status berhenti mengetik...");
       broadcast.send({
         type: "broadcast",
         event: "stopped_typing",
@@ -95,31 +94,33 @@ const SendMessage: React.FC<SendMessageProps> = ({ session, currentUser, setMess
   return (
     <>
       {session && (
-        <>
-          <Textarea
-            autoresize
-            ref={inputRef}
-            p={2}
-            size="sm"
-            variant="subtle"
-            css={{ "--focus-color": "lime" }}
-            placeholder={`Ketik pesan ${currentUser ? `ke ${currentUser.name}` : "ke Semua"}`}
-            onChange={handleTyping}
-            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          />
+        <Container>
+          <Flex gap="1" align="center">
+            <Textarea
+              autoresize
+              ref={inputRef}
+              p={2}
+              size="sm"
+              variant="subtle"
+              css={{ "--focus-color": "lime" }}
+              placeholder={`Ketik pesan ${currentUser ? `ke ${currentUser.name}` : "ke Semua"}`}
+              onChange={handleTyping}
+              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            />
 
-          <Button
-            ml={2}
-            px={3}
-            variant="solid"
-            bg="blue.500"
-            color="white"
-            rounded="md"
-            _hover={{ bg: "blue.600" }}
-            onClick={sendMessage}>
-            <LuSendHorizontal /> Send
-          </Button>
-        </>
+            <Button
+              ml={2}
+              px={3}
+              variant="solid"
+              bg="blue.500"
+              color="white"
+              rounded="md"
+              _hover={{ bg: "blue.600" }}
+              onClick={sendMessage}>
+              <LuSendHorizontal /> Send
+            </Button>
+          </Flex>
+        </Container>
       )}
     </>
   );
