@@ -37,27 +37,37 @@ export default function Home() {
 
   // ambil data users 
   const fetchUsers = async () => {
-    const { data, error } = await supabase
-      .from("users")
-      .select()
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .select()
 
-    if (error) {
-      console.error("Gagal", error)
-      return
-    } else {
-      setUsers(data)
+      if (error) {
+        console.error("Terjadi Kesalahan harap refresh halaman", error)
+        return
+
+      } else {
+        setUsers(data)
+      }
+    } catch (error) {
+      console.error("Terjadi Kesalahan harap refresh halaman", error)
     }
   }
 
   // Mengupdate status user ke online saat login
   const updateStatusToOnline = async (userId: string) => {
-    const { error } = await supabase
-      .from('users')
-      .update({ status: 'online' })
-      .eq('id', userId);
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({ status: 'online' })
+        .eq('id', userId);
 
-    if (error) {
-      console.error('Error updating status:', error);
+      if (error) {
+        console.error('Error updating status:', error);
+        return
+      }
+    } catch (error) {
+      console.error('Terjadi kesalahan', error);
     }
   };
 
@@ -89,7 +99,8 @@ export default function Home() {
   }, [session]);
 
   React.useEffect(() => {
-    const channel = supabase.channel("typing-status");
+    const channel = supabase
+      .channel("typing-status");
 
     // Mendengarkan event "mengetik"
     channel.on("broadcast", { event: "mengetik" }, (payload) => {
@@ -148,16 +159,20 @@ export default function Home() {
 
   // Ambil pesan awal saat pertama kali aplikasi dibuka
   const fetchMessages = async () => {
-    const { data, error } = await supabase
-      .from("messages")
-      .select("*")
-      .order("created_at", { ascending: true });
+    try {
+      const { data, error } = await supabase
+        .from("messages")
+        .select("*")
+        .order("created_at", { ascending: true });
 
-    if (error) {
-      console.error("Gagal mengambil pesan:", error)
-      return
+      if (error) {
+        console.error("Gagal mengambil pesan:", error)
+        return
+      }
+      setMessages(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) })));
+    } catch (error) {
+      console.error("Terjadi kesalahan", error)
     }
-    setMessages(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) })));
   };
 
   React.useEffect(() => {
@@ -170,7 +185,7 @@ export default function Home() {
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "messages" },
         (payload) => {
-          console.log("Pesan baru diterima:", payload.new);
+
           setMessages((prevMessages) => [...prevMessages, payload.new as Message]);
         }
       )
@@ -217,9 +232,7 @@ export default function Home() {
         {/* Chat Area */}
         <Flex flex="1" direction="column" shadow="md" rounded="md">
           <Flex flex="1" className="[&::-webkit-scrollbar]:w-2
-  [&::-webkit-scrollbar-track]:rounded-full
   [&::-webkit-scrollbar-track]:bg-gray-100
-  [&::-webkit-scrollbar-thumb]:rounded-full
   [&::-webkit-scrollbar-thumb]:bg-gray-300
   dark:[&::-webkit-scrollbar-track]:bg-neutral-700
   dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500" direction="column" overflowY="auto" p={4}>

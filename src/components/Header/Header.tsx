@@ -6,7 +6,7 @@ import {
   Badge,
 } from "@chakra-ui/react";
 import { ColorModeToggle } from "@/components/ui/color-mode";
-import { Spin as Hamburger } from 'hamburger-react'
+import { Divide as Hamburger } from 'hamburger-react'
 import { Button } from "../ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { Session } from 'next-auth';
