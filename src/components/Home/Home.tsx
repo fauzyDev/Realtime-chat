@@ -44,6 +44,7 @@ export default function Home() {
 
       if (error) {
         console.error("Terjadi Kesalahan harap refresh halaman", error)
+        setUsers([])
         return
 
       } else {
@@ -127,7 +128,7 @@ export default function Home() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [session?.user]);
 
   const handleLogout = async () => {
     if (!session?.user) return;
@@ -167,6 +168,7 @@ export default function Home() {
 
       if (error) {
         console.error("Gagal mengambil pesan:", error)
+        setMessages([])
         return
       }
       setMessages(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) })));
