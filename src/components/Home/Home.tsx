@@ -9,6 +9,7 @@ import Chat from "@/components/Chat/Chat";
 import { Button } from "../ui/button";
 import { Flex } from "@chakra-ui/react";
 import { supabase } from "@/libs/supabase";
+import { redis } from "@/libs/redis";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -38,6 +39,12 @@ export default function Home() {
   // ambil data users 
   const fetchUsers = async () => {
     try {
+      const cacheUsers: string | null = await redis.get("realtime")
+
+      if (cacheUsers) {
+        return JSON.parse(cacheUsers);
+      }
+
       const { data, error } = await supabase
         .from("users")
         .select()
@@ -49,6 +56,7 @@ export default function Home() {
 
       } else {
         setUsers(data)
+        await redis.set("realtime", JSON.stringify(data), { ex: 120 })
       }
     } catch (error) {
       console.error("Terjadi Kesalahan harap refresh halaman", error)
