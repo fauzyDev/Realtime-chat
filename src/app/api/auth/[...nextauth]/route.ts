@@ -9,8 +9,8 @@ const clientSecret: string = process.env.SECRET_GOOGLE_SECRET_ID ?? "";
 export const authOptions: NextAuthOptions = {
     providers: [
         Google({
-            clientId: clientId,
-            clientSecret: clientSecret
+            clientId,
+            clientSecret
         })
     ],
     secret: process.env.NEXTAUTH_SECRET,

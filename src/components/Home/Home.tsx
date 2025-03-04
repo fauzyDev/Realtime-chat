@@ -39,10 +39,10 @@ export default function Home() {
   // ambil data users 
   const fetchUsers = async () => {
     try {
-      const cacheUsers: string | null = await redis.get("realtime")
+      const cacheUsers = ( await redis.get("realtime") ) as User[]
 
       if (cacheUsers) {
-        return JSON.parse(cacheUsers);
+        setUsers(cacheUsers)
       }
 
       const { data, error } = await supabase
@@ -66,6 +66,13 @@ export default function Home() {
   // Mengupdate status user ke online saat login
   const updateStatusToOnline = async (userId: string) => {
     try {
+      const cacheMessage = ( await redis.get("realtime") ) as Message[]
+
+      if (cacheMessage) {
+        setMessages(cacheMessage)
+      }
+
+
       const { error } = await supabase
         .from('users')
         .update({ status: 'online' })
