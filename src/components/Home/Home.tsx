@@ -39,8 +39,7 @@ export default function Home() {
   // ambil data users 
   const fetchUsers = async () => {
     try {
-      const cacheUsers = ( await redis.get("realtime") ) as User[]
-
+      const cacheUsers = (await redis.get("realtime")) as User[]
       if (cacheUsers) {
         setUsers(cacheUsers)
       }
@@ -66,12 +65,10 @@ export default function Home() {
   // Mengupdate status user ke online saat login
   const updateStatusToOnline = async (userId: string) => {
     try {
-      const cacheMessage = ( await redis.get("realtime") ) as Message[]
-
-      if (cacheMessage) {
-        setMessages(cacheMessage)
+      const cacheStatus = ( await redis.get("realtime")) as User[]
+      if (cacheStatus) {
+        setUsers(cacheStatus)
       }
-
 
       const { error } = await supabase
         .from('users')
@@ -82,6 +79,8 @@ export default function Home() {
         console.error('Error updating status:', error);
         return
       }
+
+      await redis.set("realtime", { ex: 120 })
     } catch (error) {
       console.error('Terjadi kesalahan', error);
     }
@@ -176,6 +175,11 @@ export default function Home() {
   // Ambil pesan awal saat pertama kali aplikasi dibuka
   const fetchMessages = async () => {
     try {
+      const cacheMessage = ( await redis.get("realtime")) as Message[]
+      if (cacheMessage) {
+        setMessages(cacheMessage)
+      }
+
       const { data, error } = await supabase
         .from("messages")
         .select("*")
@@ -187,6 +191,7 @@ export default function Home() {
         return
       }
       setMessages(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) })));
+      await redis.set("realtime", JSON.stringify(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) }))), { ex: 120 })
     } catch (error) {
       console.error("Terjadi kesalahan", error)
     }
