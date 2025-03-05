@@ -6,6 +6,7 @@ import Sidebars from "../Sidebar/Sidebars";
 import SelectUser from "../Modal/SelectUser";
 import SendMessage from "../Chat/SendMessage";
 import Chat from "@/components/Chat/Chat";
+import { FiLogOut } from "react-icons/fi";
 import { Button } from "../ui/button";
 import { Flex } from "@chakra-ui/react";
 import { supabase } from "@/libs/supabase";
@@ -65,7 +66,7 @@ export default function Home() {
   // Mengupdate status user ke online saat login
   const updateStatusToOnline = async (userId: string) => {
     try {
-      const cacheStatus = ( await redis.get("realtime")) as User[]
+      const cacheStatus = (await redis.get("realtime")) as User[]
       if (cacheStatus) {
         setUsers(cacheStatus)
       }
@@ -175,7 +176,7 @@ export default function Home() {
   // Ambil pesan awal saat pertama kali aplikasi dibuka
   const fetchMessages = async () => {
     try {
-      const cacheMessage = ( await redis.get("realtime")) as Message[]
+      const cacheMessage = (await redis.get("realtime")) as Message[]
       if (cacheMessage) {
         setMessages(cacheMessage)
       }
@@ -242,7 +243,7 @@ export default function Home() {
       {/* Sidebar */}
       <Flex flex="1" direction="row" overflow="hidden">
         <Sidebars
-          logout={<Button onClick={handleLogout} className="bg-gray-500 font-semibold py-1 text-center text-white">Logout</Button>}
+          logout={<Button onClick={handleLogout} size="xs" className="bg-red-500 font-semibold text-center text-white"><FiLogOut /> Logout</Button>}
           session={session}
           users={filterUsers}
           messages={messages}

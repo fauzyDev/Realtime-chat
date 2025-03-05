@@ -63,25 +63,25 @@ const Sidebars: React.FC<SidebarProps> = ({ session, logout, users, messages, mo
       {/* Sidebar untuk Desktop */}
       <Box display={{ base: "none", md: "block" }} w="18%" p={4} shadow="lg" rounded="md" mr={4}>
         {session ? <>
-          <Button onClick={() => setCurrentUser(null)} size="xs" mt={1} w="full" bg="blue.500" _hover={{ bg: "blue.700", cursor: "pointer", color: "white" }} color="white" fontWeight="semibold" mb={4}>
+          <Button onClick={() => setCurrentUser(null)} size="xs" mt={1} w="full" bg="blue.500" _hover={{ bg: "blue.700", cursor: "pointer", color: "white" }} color="white" fontWeight="semibold" mb={8}>
             <FiMessageSquare />
             <Text textStyle="sm">All Chat</Text>
           </Button>
           {modal}
-          <Text textStyle="sm" fontWeight="semibold" className="mb-5">History Chat</Text>
+          <Text textStyle="sm" fontWeight="semibold" className="mb-6">History Chat</Text>
           <VStack align="stretch">
             {chatHistory.length > 0 ?
               (chatHistory.map((user) => (
-                <HStack key={user.id}
+                <HStack mb={8} key={user.id}
                   gap={4}
                   p={2}
                   rounded="md"
-                  _hover={{ bg: "gray.300", cursor: "pointer", color: "black" }}
+                  _hover={{ bg: "gray.600", opacity: 0.8, cursor: "pointer" }}
                   onClick={() => setCurrentUser(user)}>
                   <Avatar size="xs" name={user.name} src={user.avatar} />
                   <Box>
                     <Text textStyle="sm" fontWeight="bold">{user.name}</Text>
-                    <Badge size="xs" colorPalette={user.status === "online" ? "green" : user.status === "mengetik..." ? "yellow" : "gray"}>
+                    <Badge size="sm" variant="surface" colorPalette={user.status === "online" ? "green" : user.status === "mengetik..." ? "yellow" : "purple"}>
                       {user.status}
                     </Badge>
                   </Box>
@@ -97,7 +97,7 @@ const Sidebars: React.FC<SidebarProps> = ({ session, logout, users, messages, mo
             Login
           </Link>
         }
-      </Box>
+      </Box> 
 
       {/* Sidebar untuk Mobile (Drawer) */}
       {isOpen && (
@@ -159,5 +159,3 @@ const Sidebars: React.FC<SidebarProps> = ({ session, logout, users, messages, mo
 };
 
 export default Sidebars;
-
-// pass database fwZZ30wRNAWrAQg5

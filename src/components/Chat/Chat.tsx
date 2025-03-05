@@ -58,7 +58,7 @@ const Chat: React.FC<ChatProps> = ({ session, users, messages, currentUser }) =>
                 {allChat || !sender ? (<Avatar name={isUser.name ?? undefined} src={isUser.avatar ?? undefined} size="sm" />) : null}
 
                 {/* Konten pesan */}
-                <List.Root bg={allChat ? "gray.700" : sender ? "blue.600" : "gray.700"} maxWidth={{ sm: "60%", md: "50%" }} wordBreak="break-word" className="border border-gray-200 rounded-2xl p-4 space-y-3  dark:border-neutral-600/65">
+                <List.Root bg={allChat ? "gray.700" : sender ? "blue.600" : "gray.700"} shadow="sm" mb={8} maxWidth={{ sm: "60%", md: "50%" }} wordBreak="break-word" className="border border- border-gray-200 rounded p-4 space-y-3  dark:border-neutral-600/65">
                   <Text fontSize="sm" fontWeight="bold">
                     {isUser.name}
                     <Text as="span" fontWeight="normal" color="gray.300">
@@ -69,7 +69,7 @@ const Chat: React.FC<ChatProps> = ({ session, users, messages, currentUser }) =>
                       }) : "Waktu tidak ada"})
                     </Text>
                   </Text>
-                  <Text>{message.text}</Text>
+                  <Text textStyle="md">{message.text}</Text>
                 </List.Root>
                 {/* avatar di sebelah kanan */}
                 {sender && !allChat && <Avatar name={isUser.name ?? undefined} src={isUser.avatar ?? undefined} size="sm" />}

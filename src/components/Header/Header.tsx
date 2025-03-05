@@ -5,7 +5,7 @@ import {
   HStack,
   Badge,
 } from "@chakra-ui/react";
-import { ColorModeToggle } from "@/components/ui/color-mode";
+// import { ColorModeToggle } from "@/components/ui/color-mode";
 import { Divide as Hamburger } from 'hamburger-react'
 import { Button } from "../ui/button";
 import { Avatar } from "@/components/ui/avatar";
@@ -55,7 +55,7 @@ const Header: React.FC<HeaderProps> = ({ session, currentUser, isSidebarOpen, se
           </VStack>
         </HStack>
       )}
-      <ColorModeToggle />
+      {/* <ColorModeToggle /> */}
     </>
   );
 };

@@ -1,5 +1,5 @@
 import { Redis } from '@upstash/redis'
-import "dotenv/config";
+// import "dotenv/config";
 
 export const redis = new Redis({
     url: "https://liberal-buffalo-42570.upstash.io",
