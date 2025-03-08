@@ -243,7 +243,7 @@ export default function Home() {
       {/* Sidebar */}
       <Flex flex="1" direction="row" overflow="hidden">
         <Sidebars
-          logout={<Button onClick={handleLogout} size="xs" className="bg-red-500 font-semibold text-center text-white"><FiLogOut /> Logout</Button>}
+          logout={<Button onClick={handleLogout} w="full" size="xs" bg="red.500" _hover={{ bg: "red.700", cursor: "pointer"  }} className="font-semibold text-center text-white"><FiLogOut /> Logout</Button>}
           session={session}
           users={filterUsers}
           messages={messages}
@@ -255,10 +255,10 @@ export default function Home() {
         {/* Chat Area */}
         <Flex flex="1" direction="column" shadow="md" rounded="md">
           <Flex flex="1" className="[&::-webkit-scrollbar]:w-2
-  [&::-webkit-scrollbar-track]:bg-gray-100
-  [&::-webkit-scrollbar-thumb]:bg-gray-300
-  dark:[&::-webkit-scrollbar-track]:bg-neutral-700
-  dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500" direction="column" overflowY="auto" p={4}>
+        [&::-webkit-scrollbar-track]:bg-gray-100
+        [&::-webkit-scrollbar-thumb]:bg-gray-300
+        dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+        dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500" direction="column" overflowY="auto" p={4}>
             <Chat
               session={session}
               users={users}

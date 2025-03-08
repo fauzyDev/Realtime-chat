@@ -6,6 +6,8 @@ import {
   Text,
   Badge,
   For,
+  Flex,
+  Status
 } from "@chakra-ui/react";
 import {
   DrawerBackdrop,
@@ -62,42 +64,69 @@ const Sidebars: React.FC<SidebarProps> = ({ session, logout, users, messages, mo
     <>
       {/* Sidebar untuk Desktop */}
       <Box display={{ base: "none", md: "block" }} w="18%" p={4} shadow="lg" rounded="md" mr={4}>
-        {session ? <>
-          <Button onClick={() => setCurrentUser(null)} size="xs" mt={1} w="full" bg="blue.500" _hover={{ bg: "blue.700", cursor: "pointer", color: "white" }} color="white" fontWeight="semibold" mb={8}>
-            <FiMessageSquare />
-            <Text textStyle="sm">All Chat</Text>
-          </Button>
-          {modal}
-          <Text textStyle="sm" fontWeight="semibold" className="mb-6">History Chat</Text>
-          <VStack align="stretch">
-            {chatHistory.length > 0 ?
-              (chatHistory.map((user) => (
-                <HStack mb={8} key={user.id}
-                  gap={4}
-                  p={2}
-                  rounded="md"
-                  _hover={{ bg: "gray.600", opacity: 0.8, cursor: "pointer" }}
-                  onClick={() => setCurrentUser(user)}>
-                  <Avatar size="xs" name={user.name} src={user.avatar} />
-                  <Box>
-                    <Text textStyle="sm" fontWeight="bold">{user.name}</Text>
-                    <Badge size="sm" variant="surface" colorPalette={user.status === "online" ? "green" : user.status === "mengetik..." ? "yellow" : "purple"}>
-                      {user.status}
-                    </Badge>
-                  </Box>
-                </HStack>
-              ))
+        {session ? (
+          <Flex direction="column" h="full" minH="80vh" position="relative">
+            <Button onClick={() => setCurrentUser(null)}
+              size="xs"
+              mt={1}
+              w="full"
+              bg="blue.500"
+              _hover={{ bg: "blue.700", cursor: "pointer", color: "white" }}
+              color="white"
+              fontWeight="semibold"
+              mb={8}>
+              <FiMessageSquare />
+              <Text textStyle="sm">All Chat</Text>
+            </Button>
+
+            {modal}
+
+            <Text textStyle="sm" fontWeight="semibold" className="mb-6">
+              History Chat
+            </Text>
+
+            <Flex direction="column" flex="1" overflow="auto" mb={16}>
+              {chatHistory.length > 0 ? (
+                chatHistory.map((user) => (
+                  <HStack key={user.id}
+                    mb={8}
+                    gap={4}
+                    p={2}
+                    rounded="md"
+                    _hover={{ bg: "gray.600", opacity: 0.8, cursor: "pointer" }}
+                    onClick={() => setCurrentUser(user)}>
+                    <Avatar size="xs" name={user.name} src={user.avatar} />
+
+                    <Box>
+                      <Text textStyle="sm" fontWeight="bold">{user.name}</Text>
+                      <Badge
+                        size="sm"
+                        variant="surface"
+                        colorPalette={user.status === "online" ?
+                          "green" : user.status === "mengetik..." ?
+                          "yellow" : "yellow"}>
+                        <Status.Root>
+                          <Status.Indicator />{user.status}
+                        </Status.Root>
+                      </Badge>
+                    </Box>
+                  </HStack>
+                ))
               ) : (
                 <Text className="text-center mb-10">Tidak Ada</Text>
               )}
-            {logout}
-          </VStack>
-        </> :
+            </Flex>
+
+            <Box position="absolute" bottom="11" w="full" left="0" px={4}>
+              {logout}
+            </Box>
+          </Flex>
+        ) : (
           <Link href="/api/auth/signin" className="bg-slate-600 font-semibold px-4 py-2 text-center text-white">
             Login
           </Link>
-        }
-      </Box> 
+        )}
+      </Box>
 
       {/* Sidebar untuk Mobile (Drawer) */}
       {isOpen && (
