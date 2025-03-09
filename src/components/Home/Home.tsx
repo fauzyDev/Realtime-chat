@@ -40,24 +40,10 @@ export default function Home() {
   // ambil data users 
   const fetchUsers = async () => {
     try {
-      const cacheUsers = (await redis.get("realtime")) as User[]
-      if (cacheUsers) {
-        setUsers(cacheUsers)
-      }
-
-      const { data, error } = await supabase
-        .from("users")
-        .select()
-
-      if (error) {
-        console.error("Terjadi Kesalahan harap refresh halaman", error)
-        setUsers([])
-        return
-
-      } else {
-        setUsers(data)
-        await redis.set("realtime", JSON.stringify(data), { ex: 120 })
-      }
+      const res = await fetch("/api/cache")
+      const data = await res.json()
+      console.log(data)
+      setUsers(data)
     } catch (error) {
       console.error("Terjadi Kesalahan harap refresh halaman", error)
     }
@@ -191,6 +177,7 @@ export default function Home() {
         setMessages([])
         return
       }
+      
       setMessages(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) })));
       await redis.set("realtime", JSON.stringify(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) }))), { ex: 120 })
     } catch (error) {
