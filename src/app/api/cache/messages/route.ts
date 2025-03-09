@@ -3,21 +3,22 @@ import { redis } from "@/libs/redis";
 
 export async function GET() {
     try {
-        const cacheUsers = (await redis.get("user_cache")) 
-        if (cacheUsers) {
-            return Response.json(cacheUsers)
+        const cacheMessages = (await redis.get("messages_cache"))
+        if (cacheMessages) {
+            return Response.json(cacheMessages)
         }
 
         const { data, error } = await supabase
-            .from("users")
-            .select()
+            .from("messages")
+            .select("*")
+            .order("created_at", { ascending: true });
 
         if (error) {
             console.error("Terjadi Kesalahan harap refresh halaman", error)
             return
 
         } else {
-            await redis.set("realtime", JSON.stringify(data), { ex: 120 })
+            await redis.set("messages_cache", JSON.stringify(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) }))), { ex: 120 })
             return Response.json(data)
         }
     } catch (error) {

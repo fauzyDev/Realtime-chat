@@ -40,9 +40,8 @@ export default function Home() {
   // ambil data users 
   const fetchUsers = async () => {
     try {
-      const res = await fetch("/api/cache")
+      const res = await fetch("/api/cache/users")
       const data = await res.json()
-      console.log(data)
       setUsers(data)
     } catch (error) {
       console.error("Terjadi Kesalahan harap refresh halaman", error)
@@ -162,24 +161,9 @@ export default function Home() {
   // Ambil pesan awal saat pertama kali aplikasi dibuka
   const fetchMessages = async () => {
     try {
-      const cacheMessage = (await redis.get("realtime")) as Message[]
-      if (cacheMessage) {
-        setMessages(cacheMessage)
-      }
-
-      const { data, error } = await supabase
-        .from("messages")
-        .select("*")
-        .order("created_at", { ascending: true });
-
-      if (error) {
-        console.error("Gagal mengambil pesan:", error)
-        setMessages([])
-        return
-      }
-      
+      const res = await fetch("/api/cache/messages")
+      const data = await res.json()
       setMessages(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) })));
-      await redis.set("realtime", JSON.stringify(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) }))), { ex: 120 })
     } catch (error) {
       console.error("Terjadi kesalahan", error)
     }
