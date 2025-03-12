@@ -14,13 +14,7 @@ import { HStack, Box, Badge, Text } from "@chakra-ui/react";
 import { Avatar } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { LuMessageCirclePlus } from "react-icons/lu";
-
-interface User {
-  id: number;
-  name: string;
-  avatar: string;
-  status: string;
-}
+import { User } from "@/libs/types";
 
 interface ModalProps {
   users: User[];

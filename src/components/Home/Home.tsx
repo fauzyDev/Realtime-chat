@@ -9,25 +9,11 @@ import Chat from "@/components/Chat/Chat";
 import { FiLogOut } from "react-icons/fi";
 import { Button } from "../ui/button";
 import { Flex } from "@chakra-ui/react";
+import { User, Message } from "@/libs/types";
 import { supabase } from "@/libs/supabase";
 import { redis } from "@/libs/redis";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-
-interface User {
-  id: number;
-  name: string;
-  avatar: string;
-  status: string;
-}
-
-interface Message {
-  id: number;
-  sender_id: number;
-  receiver_id: number | null; // Null untuk all-chat
-  text: string;
-  timestamp: Date;
-}
 
 export default function Home() {
   const { data: session } = useSession()
@@ -38,23 +24,61 @@ export default function Home() {
   const [isSidebarOpen, setSidebarOpen] = React.useState<boolean>(false);
 
   // ambil data users 
-  const fetchUsers = async () => {
-    try {
-      const res = await fetch("/api/cache/users")
-      const data = await res.json()
-      setUsers(data)
-    } catch (error) {
-      console.error("Terjadi Kesalahan harap refresh halaman", error)
+  // const fetchUsers = async () => {
+  //   try {
+  //     const cacheUsers = (await redis.get("user_cache")) as User[]
+  //     if (cacheUsers) {
+  //       setUsers(cacheUsers)
+  //     }
+
+  //     const { data, error } = await supabase
+  //       .from("users")
+  //       .select()
+
+  //     if (error) {
+  //       console.error("Terjadi Kesalahan harap refresh halaman", error)
+  //       return setUsers([])
+
+  //     } else {
+  //       setUsers(data)
+  //       await redis.set("user_cache", JSON.stringify(data), { ex: 120 })
+  //     }
+  //   } catch (error) {
+  //     console.error("Terjadi Kesalahan harap refresh halaman", error)
+  //     setUsers([])
+  //   }
+  // }
+
+  React.useEffect(() => {
+    async function fetchUsers() {
+      try {
+        const res = await fetch("http://localhost:3000/api/cache/users")
+        const data = await res.json()
+
+        if (!Array.isArray(data)) {
+          console.error("❌ Data yang diterima bukan array!", data);
+          setUsers([]); // Hindari error dengan memberi default kosong
+          return;
+        }
+
+        setUsers(data)
+        console.log("✅ Data berhasil diset:", data);
+      } catch (error) {
+        console.error("error", error)
+        setUsers([]);
+      }
     }
-  }
+    fetchUsers()
+  }, [])
+  console.log("data", users)
 
   // Mengupdate status user ke online saat login
   const updateStatusToOnline = async (userId: string) => {
     try {
-      const cacheStatus = (await redis.get("realtime")) as User[]
-      if (cacheStatus) {
-        setUsers(cacheStatus)
-      }
+      // const cacheStatus = (await redis.get("realtime")) as User[]
+      // if (cacheStatus) {
+      //   setUsers(cacheStatus)
+      // }
 
       const { error } = await supabase
         .from('users')
@@ -79,8 +103,6 @@ export default function Home() {
       updateStatusToOnline(currentSession)
     }
 
-    fetchUsers() // ambil users di awal
-
     const channel = supabase
       .channel("users")
       .on(
@@ -97,7 +119,7 @@ export default function Home() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [session]);
+  }, [session?.user]);
 
   React.useEffect(() => {
     const channel = supabase
@@ -161,9 +183,24 @@ export default function Home() {
   // Ambil pesan awal saat pertama kali aplikasi dibuka
   const fetchMessages = async () => {
     try {
-      const res = await fetch("/api/cache/messages")
-      const data = await res.json()
-      setMessages(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) })));
+      const cacheMessages = (await redis.get("messages_cache")) as Message[]
+      if (cacheMessages) {
+        setMessages(cacheMessages)
+      }
+
+      const { data, error } = await supabase
+        .from("messages")
+        .select("*")
+        .order("created_at", { ascending: true });
+
+      if (error) {
+        console.error("Terjadi Kesalahan harap refresh halaman", error)
+        return
+
+      } else {
+        setMessages(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) })));
+        await redis.set("messages_cache", JSON.stringify(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) }))), { ex: 120 })
+      }
     } catch (error) {
       console.error("Terjadi kesalahan", error)
     }
@@ -188,7 +225,7 @@ export default function Home() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [session]);
+  }, [session?.user]);
 
   // fungsi untuk memilih user yang akan di chat 
   const handleUserSelect = (user: User): void => {
@@ -198,7 +235,7 @@ export default function Home() {
 
   // filter user berdasarkan session
   const currentUserId = session?.user;
-  const filterUsers = users.filter((user) => user.id !== currentUserId);
+  const filterUsers = users?.filter((user) => user.id !== currentUserId);
 
   return (
     <Flex direction="column" w="100vw" h="100vh" bg="bg.subtle" p={4}>
@@ -214,7 +251,7 @@ export default function Home() {
       {/* Sidebar */}
       <Flex flex="1" direction="row" overflow="hidden">
         <Sidebars
-          logout={<Button onClick={handleLogout} w="full" size="xs" bg="red.500" _hover={{ bg: "red.700", cursor: "pointer"  }} className="font-semibold text-center text-white"><FiLogOut /> Logout</Button>}
+          logout={<Button onClick={handleLogout} w="full" size="xs" bg="red.500" _hover={{ bg: "red.700", cursor: "pointer" }} className="font-semibold text-center text-white"><FiLogOut /> Logout</Button>}
           session={session}
           users={filterUsers}
           messages={messages}

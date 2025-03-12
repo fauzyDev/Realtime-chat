@@ -4,21 +4,7 @@ import { Button } from "../ui/button";
 import { LuSendHorizontal } from "react-icons/lu";
 import { Session } from 'next-auth';
 import { supabase } from '@/libs/supabase';
-
-interface User {
-  id: number;
-  name: string;
-  avatar: string;
-  status: string;
-}
-
-interface Message {
-  id: number;
-  sender_id: number;
-  receiver_id: number | null; // Null untuk all-chat
-  text: string;
-  timestamp: Date;
-}
+import { User, Message } from '@/libs/types';
 
 interface SendMessageProps {
   session: Session | null;

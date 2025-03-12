@@ -1,9 +1,10 @@
 import { supabase } from "@/libs/supabase";
 import { redis } from "@/libs/redis";
+import { Message } from "@/libs/types";
 
 export async function GET() {
     try {
-        const cacheMessages = (await redis.get("messages_cache"))
+        const cacheMessages = (await redis.get("messages_cache")) as Message[]
         if (cacheMessages) {
             return Response.json(cacheMessages)
         }

@@ -8,19 +8,7 @@ import {
 
 import { Avatar } from "@/components/ui/avatar";
 import { Session } from 'next-auth';
-interface User {
-  id: number;
-  name: string;
-  avatar: string;
-  status: string;
-}
-interface Message {
-  id: number;
-  sender_id: number;
-  receiver_id: number | null; // Null untuk all-chat
-  text: string;
-  timestamp: Date;
-}
+import { User, Message } from "@/libs/types";
 
 interface ChatProps {
   session: Session | null;

@@ -10,13 +10,7 @@ import { Divide as Hamburger } from 'hamburger-react'
 import { Button } from "../ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { Session } from 'next-auth';
-
-interface User {
-  id: number;
-  name: string;
-  avatar: string;
-  status: string;
-}
+import { User } from "@/libs/types";
 
 interface HeaderProps {
   session: Session | null;

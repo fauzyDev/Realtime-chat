@@ -18,25 +18,14 @@ import {
   DrawerRoot,
   DrawerTitle,
 } from "../ui/drawer";
+
+import Link from "next/link";
 import { Avatar } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { FiMessageSquare } from "react-icons/fi";
-import Link from "next/link";
 import { Session } from 'next-auth';
+import { User, Message } from "@/libs/types";
 
-interface User {
-  id: number;
-  name: string;
-  avatar: string;
-  status: string;
-}
-interface Message {
-  id: number;
-  sender_id: number;
-  receiver_id: number | null; // Null untuk all-chat
-  text: string;
-  timestamp: Date;
-}
 interface SidebarProps {
   logout: React.ReactNode
   session: Session | null;
