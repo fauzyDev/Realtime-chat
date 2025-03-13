@@ -1,10 +1,10 @@
 import { supabase } from "@/libs/supabase";
 import { redis } from "@/libs/redis";
-import { Message } from "@/libs/types";
 
 export async function GET() {
     try {
-        const cacheMessages = (await redis.get("messages_cache")) as Message[]
+        const key = "messages_cache"
+        const cacheMessages = await redis.get(key)
         if (cacheMessages) {
             return Response.json(cacheMessages)
         }
@@ -19,7 +19,7 @@ export async function GET() {
             return
 
         } else {
-            await redis.set("messages_cache", JSON.stringify(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) }))), { ex: 120 })
+            await redis.set(key, JSON.stringify(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) }))), { ex: 120 })
             return Response.json(data)
         }
     } catch (error) {

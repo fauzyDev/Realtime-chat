@@ -11,7 +11,6 @@ import { Button } from "../ui/button";
 import { Flex } from "@chakra-ui/react";
 import { User, Message } from "@/libs/types";
 import { supabase } from "@/libs/supabase";
-import { redis } from "@/libs/redis";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -23,46 +22,18 @@ export default function Home() {
   const [currentUser, setCurrentUser] = React.useState<User | null>(null); // User yang sedang di-chat
   const [isSidebarOpen, setSidebarOpen] = React.useState<boolean>(false);
 
-  // ambil data users 
-  // const fetchUsers = async () => {
-  //   try {
-  //     const cacheUsers = (await redis.get("user_cache")) as User[]
-  //     if (cacheUsers) {
-  //       setUsers(cacheUsers)
-  //     }
-
-  //     const { data, error } = await supabase
-  //       .from("users")
-  //       .select()
-
-  //     if (error) {
-  //       console.error("Terjadi Kesalahan harap refresh halaman", error)
-  //       return setUsers([])
-
-  //     } else {
-  //       setUsers(data)
-  //       await redis.set("user_cache", JSON.stringify(data), { ex: 120 })
-  //     }
-  //   } catch (error) {
-  //     console.error("Terjadi Kesalahan harap refresh halaman", error)
-  //     setUsers([])
-  //   }
-  // }
-
   React.useEffect(() => {
-    async function fetchUsers() {
+    const fetchUsers = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/cache/users")
+        const res = await fetch("/api/cache/users")
         const data = await res.json()
 
         if (!Array.isArray(data)) {
-          console.error("❌ Data yang diterima bukan array!", data);
           setUsers([]); // Hindari error dengan memberi default kosong
           return;
         }
-
         setUsers(data)
-        console.log("✅ Data berhasil diset:", data);
+
       } catch (error) {
         console.error("error", error)
         setUsers([]);
@@ -70,38 +41,25 @@ export default function Home() {
     }
     fetchUsers()
   }, [])
-  console.log("data", users)
-
-  // Mengupdate status user ke online saat login
-  const updateStatusToOnline = async (userId: string) => {
-    try {
-      // const cacheStatus = (await redis.get("realtime")) as User[]
-      // if (cacheStatus) {
-      //   setUsers(cacheStatus)
-      // }
-
-      const { error } = await supabase
-        .from('users')
-        .update({ status: 'online' })
-        .eq('id', userId);
-
-      if (error) {
-        console.error('Error updating status:', error);
-        return
-      }
-
-      await redis.set("realtime", { ex: 120 })
-    } catch (error) {
-      console.error('Terjadi kesalahan', error);
-    }
-  };
 
   // Dengarkan perubahan data status user secara realtime
   React.useEffect(() => {
-    const currentSession = session?.user
-    if (typeof currentSession === "string") {
-      updateStatusToOnline(currentSession)
-    }
+    // Mengupdate status user ke online saat login
+    const updateStatusToOnline = async () => {
+      try {
+        if (!session?.user) return;
+
+        await fetch("/api/cache/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: session.user, status: "online" }),
+        })
+      } catch (error) {
+        console.error('Terjadi kesalahan', error);
+      }
+    };
+
+    updateStatusToOnline()
 
     const channel = supabase
       .channel("users")
@@ -122,8 +80,7 @@ export default function Home() {
   }, [session?.user]);
 
   React.useEffect(() => {
-    const channel = supabase
-      .channel("typing-status");
+    const channel = supabase.channel("typing-status");
 
     // Mendengarkan event "mengetik"
     channel.on("broadcast", { event: "mengetik" }, (payload) => {
@@ -183,24 +140,10 @@ export default function Home() {
   // Ambil pesan awal saat pertama kali aplikasi dibuka
   const fetchMessages = async () => {
     try {
-      const cacheMessages = (await redis.get("messages_cache")) as Message[]
-      if (cacheMessages) {
-        setMessages(cacheMessages)
-      }
+      const res = await fetch("/api/cache/messages")
+      const data = await res.json()
 
-      const { data, error } = await supabase
-        .from("messages")
-        .select("*")
-        .order("created_at", { ascending: true });
-
-      if (error) {
-        console.error("Terjadi Kesalahan harap refresh halaman", error)
-        return
-
-      } else {
-        setMessages(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) })));
-        await redis.set("messages_cache", JSON.stringify(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) }))), { ex: 120 })
-      }
+      setMessages(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) })));        
     } catch (error) {
       console.error("Terjadi kesalahan", error)
     }

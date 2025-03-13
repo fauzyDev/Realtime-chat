@@ -32,12 +32,15 @@ export async function GET() {
 export async function POST(req: NextRequest) {
     try {
         const { userId, status } = await req.json();
-        if (!userId) return NextResponse.json({ error: "User ID required" }, { status: 400 });
+
+        if (!userId || !["online", "offline"].includes(status)) {
+            return NextResponse.json({ error: "Invalid status" }, { status: 400 });
+        }
 
         // Update status di Supabase
         const { error } = await supabase
             .from("users")
-            .update({ status: "online" })
+            .update({ status })
             .eq("id", userId);
 
         if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -47,7 +50,7 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({ message: `${status}` });
     } catch (error) {
-        console.error("Terjadi Kesalahan harap refresh halaman", error)
+        console.error("Terjadi Kesalahan", error)
         return NextResponse.json({ error: "Server error" }, { status: 500 });
     }
 }
