@@ -11,4 +11,5 @@ export interface Message {
     receiver_id: number | null; // Null untuk all-chat
     text: string;
     timestamp: Date;
+    created_at?: string
   }

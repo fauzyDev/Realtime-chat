@@ -21,6 +21,7 @@ export default function Home() {
   const [users, setUsers] = React.useState<User[]>([])
   const [currentUser, setCurrentUser] = React.useState<User | null>(null); // User yang sedang di-chat
   const [isSidebarOpen, setSidebarOpen] = React.useState<boolean>(false);
+  const autoScroll = React.useRef<HTMLDivElement>(null)
 
   React.useEffect(() => {
     const fetchUsers = async () => {
@@ -141,7 +142,7 @@ export default function Home() {
   const fetchMessages = async () => {
     try {
       const res = await fetch("/api/cache/messages")
-      const data = await res.json()
+      const data: Message[] = await res.json()
 
       setMessages(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) })));        
     } catch (error) {
@@ -169,6 +170,12 @@ export default function Home() {
       supabase.removeChannel(channel);
     };
   }, [session?.user]);
+
+  React.useEffect(() => {
+    if (autoScroll.current) {
+      autoScroll.current.scrollIntoView({ behavior: "smooth" })
+    }
+  }, [messages])
 
   // fungsi untuk memilih user yang akan di chat 
   const handleUserSelect = (user: User): void => {
@@ -214,7 +221,8 @@ export default function Home() {
               session={session}
               users={users}
               messages={messages}
-              currentUser={currentUser} />
+              currentUser={currentUser}
+              scroll={autoScroll} />
           </Flex>
 
           {/* Message Input */}

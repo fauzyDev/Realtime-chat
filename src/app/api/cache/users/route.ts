@@ -21,7 +21,6 @@ export async function GET() {
 
         } else {
             await redis.set(key, JSON.stringify(data), { ex: 60 })
-            console.log("Menyimpan ke Redis:", data);
             return NextResponse.json(data)
         }
     } catch (error) {

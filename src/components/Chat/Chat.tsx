@@ -1,4 +1,4 @@
-import React from "react";
+import React, { RefObject } from "react";
 import {
   List,
   Text,
@@ -15,8 +15,9 @@ interface ChatProps {
   messages: Message[];
   currentUser: User | null;
   users: User[];
+  scroll: RefObject<HTMLDivElement>
 }
-const Chat: React.FC<ChatProps> = ({ session, users, messages, currentUser }) => {
+const Chat: React.FC<ChatProps> = ({ session, users, messages, currentUser, scroll }) => {
 
   // Filter pesan berdasarkan pengguna yang sedang di-chat
   const filteredMessages = currentUser ?
@@ -67,6 +68,7 @@ const Chat: React.FC<ChatProps> = ({ session, users, messages, currentUser }) =>
         ) : (
           <Text>Tidak ada pesan silahkan kirm pesan</Text>
         )}
+        <div ref={scroll}></div>
       </VStack>
     </>
   );
