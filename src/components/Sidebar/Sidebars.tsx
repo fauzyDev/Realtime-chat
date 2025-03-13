@@ -93,7 +93,7 @@ const Sidebars: React.FC<SidebarProps> = ({ session, logout, users, messages, mo
                         variant="surface"
                         colorPalette={user.status === "online" ?
                           "green" : user.status === "mengetik..." ?
-                          "yellow" : "yellow"}>
+                            "yellow" : "yellow"}>
                         <Status.Root>
                           <Status.Indicator />{user.status}
                         </Status.Root>

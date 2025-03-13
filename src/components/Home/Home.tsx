@@ -23,25 +23,22 @@ export default function Home() {
   const [isSidebarOpen, setSidebarOpen] = React.useState<boolean>(false);
   const autoScroll = React.useRef<HTMLDivElement>(null)
 
-  React.useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await fetch("/api/cache/users")
-        const data = await res.json()
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch("/api/cache/users")
+      const data = await res.json()
 
-        if (!Array.isArray(data)) {
-          setUsers([]); // Hindari error dengan memberi default kosong
-          return;
-        }
-        setUsers(data)
-
-      } catch (error) {
-        console.error("error", error)
-        setUsers([]);
+      if (!Array.isArray(data)) {
+        setUsers([]); // Hindari error dengan memberi default kosong
+        return;
       }
+      setUsers(data)
+
+    } catch (error) {
+      console.error("error", error)
+      setUsers([]);
     }
-    fetchUsers()
-  }, [])
+  }
 
   // Dengarkan perubahan data status user secara realtime
   React.useEffect(() => {
@@ -60,6 +57,7 @@ export default function Home() {
       }
     };
 
+    fetchUsers()
     updateStatusToOnline()
 
     const channel = supabase
@@ -144,7 +142,7 @@ export default function Home() {
       const res = await fetch("/api/cache/messages")
       const data: Message[] = await res.json()
 
-      setMessages(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) })));        
+      setMessages(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) })));
     } catch (error) {
       console.error("Terjadi kesalahan", error)
     }
@@ -213,10 +211,10 @@ export default function Home() {
         {/* Chat Area */}
         <Flex flex="1" direction="column" shadow="md" rounded="md">
           <Flex flex="1" className="[&::-webkit-scrollbar]:w-2
-        [&::-webkit-scrollbar-track]:bg-gray-100
-        [&::-webkit-scrollbar-thumb]:bg-gray-300
-        dark:[&::-webkit-scrollbar-track]:bg-neutral-700
-        dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500" direction="column" overflowY="auto" p={4}>
+            [&::-webkit-scrollbar-track]:bg-gray-100
+            [&::-webkit-scrollbar-thumb]:bg-gray-300
+            dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+            dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500" direction="column" overflowY="auto" p={4}>
             <Chat
               session={session}
               users={users}
