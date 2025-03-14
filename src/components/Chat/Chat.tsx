@@ -16,8 +16,10 @@ interface ChatProps {
   currentUser: User | null;
   users: User[];
   scroll: RefObject<HTMLDivElement>
+  chatContainer: RefObject<HTMLDivElement>
+  handleScroll: VoidFunction
 }
-const Chat: React.FC<ChatProps> = ({ session, users, messages, currentUser, scroll }) => {
+const Chat: React.FC<ChatProps> = ({ session, users, messages, currentUser, scroll, chatContainer, handleScroll }) => {
 
   // Filter pesan berdasarkan pengguna yang sedang di-chat
   const filteredMessages = currentUser ?
@@ -31,7 +33,7 @@ const Chat: React.FC<ChatProps> = ({ session, users, messages, currentUser, scro
 
   return (
     <>
-      <VStack align="stretch" flex="1" overflowY="auto" p={4} gap={4}>
+      <VStack ref={chatContainer} onScroll={handleScroll} align="stretch" flex="1" overflowY="auto" p={4} gap={4}>
         {filteredMessages.length > 0 ? (
           filteredMessages.map((message) => {
             const sender = message.sender_id === session?.user

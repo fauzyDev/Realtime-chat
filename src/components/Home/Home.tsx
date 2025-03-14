@@ -21,6 +21,8 @@ export default function Home() {
   const [users, setUsers] = React.useState<User[]>([])
   const [currentUser, setCurrentUser] = React.useState<User | null>(null); // User yang sedang di-chat
   const [isSidebarOpen, setSidebarOpen] = React.useState<boolean>(false);
+  const [isUserAtBottom, setIsUserAtBottom] = React.useState(true);
+  const chatContainerRef = React.useRef<HTMLDivElement>(null);
   const autoScroll = React.useRef<HTMLDivElement>(null)
 
   // fetch users
@@ -174,11 +176,16 @@ export default function Home() {
     };
   }, [session?.user]);
 
+  const handleScroll = () => {
+    if (!chatContainerRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+    setIsUserAtBottom(scrollTop + clientHeight >= scrollHeight - 50);
+  }
+
   React.useEffect(() => {
-    if (autoScroll.current) {
+    if (!autoScroll.current || !isUserAtBottom) return
       autoScroll.current.scrollIntoView({ behavior: "smooth" })
-    }
-  }, [messages])
+  }, [messages, isUserAtBottom])
 
   // fungsi untuk memilih user yang akan di chat 
   const handleUserSelect = (user: User): void => {
@@ -225,7 +232,9 @@ export default function Home() {
               users={users}
               messages={messages}
               currentUser={currentUser}
-              scroll={autoScroll} />
+              scroll={autoScroll}
+              handleScroll={handleScroll}
+              chatContainer={chatContainerRef} />
           </Flex>
 
           {/* Message Input */}
