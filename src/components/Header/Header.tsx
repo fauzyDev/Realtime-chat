@@ -4,6 +4,7 @@ import {
   VStack,
   HStack,
   Badge,
+  Status
 } from "@chakra-ui/react";
 
 import { Divide as Hamburger } from 'hamburger-react'
@@ -43,8 +44,11 @@ const Header: React.FC<HeaderProps> = ({ session, currentUser, isSidebarOpen, se
             <Text fontSize="sm" fontWeight="bold">
               {currentUser.name}
             </Text>
-            <Badge colorPalette={currentUser.status === "online" ? "green" : currentUser.status === "mengetik..." ? "yellow" : "gray"}>
-              {currentUser.status}
+            <Badge size="xs" variant="surface" colorPalette={currentUser.status === "online" ?
+              "green" : currentUser.status === "mengetik..." ? "yellow" : "gray"}>
+              <Status.Root size="sm">
+                <Status.Indicator />{currentUser.status}
+              </Status.Root>
             </Badge>
           </VStack>
         </HStack>

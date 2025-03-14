@@ -88,13 +88,10 @@ const Sidebars: React.FC<SidebarProps> = ({ session, logout, users, messages, mo
 
                     <Box>
                       <Text textStyle="sm" fontWeight="bold">{user.name}</Text>
-                      <Badge
-                        size="sm"
-                        variant="surface"
-                        colorPalette={user.status === "online" ?
-                          "green" : user.status === "mengetik..." ?
-                            "yellow" : "yellow"}>
-                        <Status.Root>
+                      <Badge size="xs" variant="surface" colorPalette={user.status === "online" ?
+                        "green" : user.status === "mengetik..." ?
+                          "yellow" : "gray"}>
+                        <Status.Root size="sm">
                           <Status.Indicator />{user.status}
                         </Status.Root>
                       </Badge>
