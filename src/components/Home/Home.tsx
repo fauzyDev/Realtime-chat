@@ -23,6 +23,7 @@ export default function Home() {
   const [isSidebarOpen, setSidebarOpen] = React.useState<boolean>(false);
   const autoScroll = React.useRef<HTMLDivElement>(null)
 
+  // fetch users
   const fetchUsers = async () => {
     try {
       const res = await fetch("/api/cache/users")
@@ -38,7 +39,19 @@ export default function Home() {
       console.error("error", error)
       setUsers([]);
     }
-  }
+  };
+
+  // fetch messages
+  const fetchMessages = async () => {
+    try {
+      const res = await fetch("/api/cache/messages")
+      const data: Message[] = await res.json()
+
+      setMessages(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) })));
+    } catch (error) {
+      console.error("Terjadi kesalahan", error)
+    }
+  };
 
   // Dengarkan perubahan data status user secara realtime
   React.useEffect(() => {
@@ -78,6 +91,7 @@ export default function Home() {
     };
   }, [session?.user]);
 
+  // mendengarkan evemt users 
   React.useEffect(() => {
     const channel = supabase.channel("typing-status");
 
@@ -108,6 +122,7 @@ export default function Home() {
     };
   }, [session?.user]);
 
+  // function logout
   const handleLogout = async () => {
     if (!session?.user) return;
 
@@ -119,6 +134,7 @@ export default function Home() {
     router.push("/api/auth/signout")
   };
 
+  // function close browser
   React.useEffect(() => {
     const handleUnload = async () => {
       if (!session?.user) return;
@@ -137,19 +153,8 @@ export default function Home() {
   }, [session?.user]);
 
   // Ambil pesan awal saat pertama kali aplikasi dibuka
-  const fetchMessages = async () => {
-    try {
-      const res = await fetch("/api/cache/messages")
-      const data: Message[] = await res.json()
-
-      setMessages(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) })));
-    } catch (error) {
-      console.error("Terjadi kesalahan", error)
-    }
-  };
-
   React.useEffect(() => {
-    fetchMessages(); // Ambil pesan awal
+    fetchMessages();
 
     // Dengarkan perubahan data secara realtime
     const channel = supabase
