@@ -22,6 +22,7 @@ export default function Home() {
   const [currentUser, setCurrentUser] = React.useState<User | null>(null); // User yang sedang di-chat
   const [isSidebarOpen, setSidebarOpen] = React.useState<boolean>(false);
   const [isUserAtBottom, setIsUserAtBottom] = React.useState(true);
+  const [showScrollButton, setShowScrollButton] = React.useState(false);
   const chatContainerRef = React.useRef<HTMLDivElement>(null);
   const autoScroll = React.useRef<HTMLDivElement>(null)
 
@@ -179,13 +180,22 @@ export default function Home() {
   const handleScroll = () => {
     if (!chatContainerRef.current) return;
     const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
-    setIsUserAtBottom(scrollTop + clientHeight >= scrollHeight - 50);
+    const atBottom = scrollTop + clientHeight >= scrollHeight - 50
+    setIsUserAtBottom(atBottom);
+    setShowScrollButton(!atBottom);
   }
 
   React.useEffect(() => {
     if (!autoScroll.current || !isUserAtBottom) return
       autoScroll.current.scrollIntoView({ behavior: "smooth" })
+      setShowScrollButton(false);
   }, [messages, isUserAtBottom])
+
+  const scrollToBottom = () => {
+  if (!autoScroll.current) return;
+  autoScroll.current.scrollIntoView({ behavior: "smooth" });
+  setShowScrollButton(false); 
+};
 
   // fungsi untuk memilih user yang akan di chat 
   const handleUserSelect = (user: User): void => {
@@ -222,7 +232,7 @@ export default function Home() {
 
         {/* Chat Area */}
         <Flex flex="1" direction="column" shadow="md" rounded="md">
-          <Flex flex="1" className="[&::-webkit-scrollbar]:w-2
+          <Flex position="relative" height="full" flex="1" className="[&::-webkit-scrollbar]:w-2
             [&::-webkit-scrollbar-track]:bg-gray-100
             [&::-webkit-scrollbar-thumb]:bg-gray-300
             dark:[&::-webkit-scrollbar-track]:bg-neutral-700
@@ -234,7 +244,9 @@ export default function Home() {
               currentUser={currentUser}
               scroll={autoScroll}
               handleScroll={handleScroll}
-              chatContainer={chatContainerRef} />
+              chatContainer={chatContainerRef}
+              showScrollButton={showScrollButton}
+              scrollToBottom={scrollToBottom} />
           </Flex>
 
           {/* Message Input */}

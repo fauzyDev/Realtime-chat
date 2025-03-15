@@ -6,7 +6,9 @@ import {
   HStack,
 } from "@chakra-ui/react";
 
+import { FaArrowDown } from "react-icons/fa";
 import { Avatar } from "@/components/ui/avatar";
+import { Button } from "../ui/button";
 import { Session } from 'next-auth';
 import { User, Message } from "@/libs/types";
 
@@ -18,8 +20,10 @@ interface ChatProps {
   scroll: RefObject<HTMLDivElement>
   chatContainer: RefObject<HTMLDivElement>
   handleScroll: VoidFunction
+  showScrollButton: boolean
+  scrollToBottom: VoidFunction
 }
-const Chat: React.FC<ChatProps> = ({ session, users, messages, currentUser, scroll, chatContainer, handleScroll }) => {
+const Chat: React.FC<ChatProps> = ({ session, users, messages, currentUser, scroll, chatContainer, handleScroll, showScrollButton, scrollToBottom }) => {
 
   // Filter pesan berdasarkan pengguna yang sedang di-chat
   const filteredMessages = currentUser ?
@@ -71,6 +75,18 @@ const Chat: React.FC<ChatProps> = ({ session, users, messages, currentUser, scro
           <Text>Tidak ada pesan silahkan kirm pesan</Text>
         )}
         <div ref={scroll}></div>
+        {showScrollButton && (
+          <Button
+            size="sm"
+            className="rounded-full"
+            position="absolute"
+            bottom="20px"
+            right="10"
+            bg="blue.500"
+            onClick={scrollToBottom}>
+            <FaArrowDown />
+          </Button>
+        )}
       </VStack>
     </>
   );
