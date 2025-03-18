@@ -17,8 +17,10 @@ import { useRouter } from "next/navigation";
 export default function Home() {
   const { data: session } = useSession()
   const router = useRouter()
-  const [messages, setMessages] = React.useState<Message[]>([]);
   const [users, setUsers] = React.useState<User[]>([])
+  const [messages, setMessages] = React.useState<Message[]>([]);
+  const [editingMessageId, setEditingMessageId] = React.useState<number | null>(null);
+  const [editingText, setEditingText] = React.useState("");
   const [currentUser, setCurrentUser] = React.useState<User | null>(null); // User yang sedang di-chat
   const [isSidebarOpen, setSidebarOpen] = React.useState<boolean>(false);
   const [isUserAtBottom, setIsUserAtBottom] = React.useState(true);
@@ -49,6 +51,7 @@ export default function Home() {
     try {
       const res = await fetch("/api/cache/messages")
       const data: Message[] = await res.json()
+
 
       setMessages(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) })));
     } catch (error) {
@@ -177,6 +180,12 @@ export default function Home() {
     };
   }, [session?.user]);
 
+  const handleEditClick = (message: Message) => {
+
+    setEditingMessageId(message.id);
+    setEditingText(message.text);
+  };
+
   const handleScroll = () => {
     if (!chatContainerRef.current) return;
     const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
@@ -187,15 +196,15 @@ export default function Home() {
 
   React.useEffect(() => {
     if (!autoScroll.current || !isUserAtBottom) return
-      autoScroll.current.scrollIntoView({ behavior: "smooth" })
-      setShowScrollButton(false);
+    autoScroll.current.scrollIntoView({ behavior: "smooth" })
+    setShowScrollButton(false);
   }, [messages, isUserAtBottom])
 
   const scrollToBottom = () => {
-  if (!autoScroll.current) return;
-  autoScroll.current.scrollIntoView({ behavior: "smooth" });
-  setShowScrollButton(false); 
-};
+    if (!autoScroll.current) return;
+    autoScroll.current.scrollIntoView({ behavior: "smooth" });
+    setShowScrollButton(false);
+  };
 
   // fungsi untuk memilih user yang akan di chat 
   const handleUserSelect = (user: User): void => {
@@ -246,7 +255,8 @@ export default function Home() {
               handleScroll={handleScroll}
               chatContainer={chatContainerRef}
               showScrollButton={showScrollButton}
-              scrollToBottom={scrollToBottom} />
+              scrollToBottom={scrollToBottom}
+              handleEditClick={handleEditClick} />
           </Flex>
 
           {/* Message Input */}
@@ -254,7 +264,10 @@ export default function Home() {
             <SendMessage
               session={session}
               currentUser={currentUser}
-              setMessages={setMessages} />
+              setMessages={setMessages}
+              editingMessageId={editingMessageId}
+              editingText={editingText}
+              setEditingText={setEditingText} />
           </Flex>
         </Flex>
       </Flex>

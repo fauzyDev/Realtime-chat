@@ -29,7 +29,7 @@ const SelectUser: React.FC<ModalProps> = ({ users, onUserSelect }) => {
       <DialogTrigger asChild>
         <Button bg="green.500" _hover={{ bg: "green.700", cursor: "pointer", color: "white" }} size="xs" color="white" w="full" fontWeight="semibold" mb={8}>
           <LuMessageCirclePlus />
-          Chat Baru
+          New Chat
         </Button>
       </DialogTrigger>
 
@@ -38,7 +38,7 @@ const SelectUser: React.FC<ModalProps> = ({ users, onUserSelect }) => {
         <DialogCloseTrigger asChild />
 
         <DialogHeader>
-          <DialogTitle>Pilih User</DialogTitle>
+          <DialogTitle>Select User</DialogTitle>
         </DialogHeader>
 
         <DialogBody>

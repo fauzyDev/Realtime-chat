@@ -10,41 +10,46 @@ interface SendMessageProps {
   session: Session | null;
   currentUser: User | null | undefined;
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+  editingMessageId: number | null;
+  editingText: string;
+  setEditingText: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const SendMessage: React.FC<SendMessageProps> = ({ session, currentUser, setMessages }) => {
+const SendMessage: React.FC<SendMessageProps> = ({ session, currentUser, setMessages, editingMessageId, editingText, setEditingText }) => {
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
+  const newMessageRef = React.useRef<string>("");
   const typingTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const broadcast = supabase.channel("typing-status");
 
-  const handleTyping = () => {
+  const handleTyping = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (!inputRef.current || !currentUser) return;
 
+    inputRef.current.value = e.target.value;
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
-    
+
     // Kirim event "mengetik"
     broadcast.send({
       type: "broadcast",
       event: "mengetik",
-      payload: { userId: session?.user },
+      payload: { userId: session.user },
     });
-    
+
     // Set timeout untuk menghapus status mengetik jika user berhenti mengetik dalam 2 detik
     typingTimeoutRef.current = setTimeout(() => {
       broadcast.send({
         type: "broadcast",
         event: "stopped_typing",
-        payload: { userId: session?.user },
+        payload: { userId: session.user },
       });
     }, 2000);
   };
 
   // Fungsi untuk mengirim pesan
   const sendMessage = React.useCallback(async () => {
-    const newMessage = inputRef.current?.value;
-    if (!newMessage || newMessage.trim() === "") return;
+    const newMessage = inputRef.current.value;
+    if (!newMessage.trim()) return;
 
     try {
       const response = await fetch("/api/messages", {
@@ -71,11 +76,16 @@ const SendMessage: React.FC<SendMessageProps> = ({ session, currentUser, setMess
       };
 
       setMessages((prev) => [...prev, newMsg]); // Tambahkan pesan baru ke daftar
+      // newMessageRef.current = ""
       if (inputRef.current) inputRef.current.value = ""; // Kosongkan input setelah mengirim
     } catch (error) {
       console.error("Gagal mengirim pesan:", error);
     }
   }, [currentUser, setMessages]);
+
+  const saveEditedMessage = () => {
+    setEditingText("");
+  };
 
   return (
     <>
@@ -85,13 +95,32 @@ const SendMessage: React.FC<SendMessageProps> = ({ session, currentUser, setMess
             <Textarea
               autoresize
               ref={inputRef}
+              defaultValue={editingMessageId ? undefined : ""}
+              value={editingMessageId ? editingText : undefined}
               p={2}
               size="sm"
+              className="rounded"
               variant="subtle"
-              css={{ "--focus-color": "lime" }}
+              css={{ "--focus-color": "lineHeights.moderate" }}
               placeholder={`Ketik pesan ${currentUser ? `ke ${currentUser.name}` : "ke Semua"}`}
-              onChange={handleTyping}
-              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+              onChange={(e) => {
+                if (editingMessageId) {
+                  setEditingText(e.target.value);
+                } else {
+                  newMessageRef.current = e.target.value;
+                  handleTyping(e);
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  if (editingMessageId) {
+                    saveEditedMessage();
+                  } else {
+                    sendMessage();
+                  }
+                }
+              }}
             />
 
             <Button
@@ -102,7 +131,7 @@ const SendMessage: React.FC<SendMessageProps> = ({ session, currentUser, setMess
               color="white"
               rounded="md"
               _hover={{ bg: "blue.600" }}
-              onClick={sendMessage}>
+              onClick={editingMessageId ? saveEditedMessage : sendMessage}>
               <LuSendHorizontal /> Send
             </Button>
           </Flex>

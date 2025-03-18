@@ -1,17 +1,18 @@
+import { NextResponse, NextRequest } from "next/server";
 import { supabase } from '@/libs/supabase';
 import { userSession } from '@/libs/auth';
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const session = await userSession()
 
     if (!session) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     
     const { text, receiver_id } = await req.json();
     if (!text.trim()) {
-      return Response.json({ error: "Message cannot be empty" }, { status: 400 });
+      return NextResponse.json({ error: "Message cannot be empty" }, { status: 400 });
     }
 
     // Simpan pesan ke database
@@ -23,8 +24,8 @@ export async function POST(req: Request) {
 
     if (error) throw error;
 
-    return Response.json(data);
+    return NextResponse.json(data);
   } catch {
-    return Response.json({ error: "Failed to send message" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
   }
 }

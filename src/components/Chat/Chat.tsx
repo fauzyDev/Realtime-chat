@@ -4,8 +4,11 @@ import {
   Text,
   VStack,
   HStack,
+  Menu,
+  Portal
 } from "@chakra-ui/react";
 
+import { BiDotsVerticalRounded } from "react-icons/bi";
 import { FaArrowDown } from "react-icons/fa";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
@@ -17,13 +20,15 @@ interface ChatProps {
   messages: Message[];
   currentUser: User | null;
   users: User[];
-  scroll: RefObject<HTMLDivElement>
-  chatContainer: RefObject<HTMLDivElement>
-  handleScroll: VoidFunction
-  showScrollButton: boolean
-  scrollToBottom: VoidFunction
+  scroll: RefObject<HTMLDivElement>;
+  chatContainer: RefObject<HTMLDivElement>;
+  handleScroll: VoidFunction;
+  showScrollButton: boolean;
+  scrollToBottom: VoidFunction;
+  handleEditClick: (message) => void
 }
-const Chat: React.FC<ChatProps> = ({ session, users, messages, currentUser, scroll, chatContainer, handleScroll, showScrollButton, scrollToBottom }) => {
+
+const Chat: React.FC<ChatProps> = ({ session, users, messages, currentUser, scroll, chatContainer, handleScroll, showScrollButton, scrollToBottom, handleEditClick }) => {
 
   // Filter pesan berdasarkan pengguna yang sedang di-chat
   const filteredMessages = currentUser ?
@@ -48,12 +53,36 @@ const Chat: React.FC<ChatProps> = ({ session, users, messages, currentUser, scro
             const isUser = senderUser ?? receiverUser ?? { name: "", avatar: undefined }
 
             return (
-              <HStack key={message.id} align="start" gap={3} p={3} rounded="md" justifyContent={allChat ? "flex-start" : sender ? "flex-end" : "flex-start"}>
+              <HStack key={message.id} align="start" position="relative" gap={3} p={3} rounded="md" justifyContent={allChat ? "flex-start" : sender ? "flex-end" : "flex-start"}>
                 {/* avatar di sebelah kiri */}
                 {allChat || !sender ? (<Avatar name={isUser.name ?? undefined} src={isUser.avatar ?? undefined} size="sm" />) : null}
 
                 {/* Konten pesan */}
-                <List.Root bg={allChat ? "gray.700" : sender ? "blue.600" : "gray.700"} shadow="sm" mb={8} maxWidth={{ sm: "60%", md: "50%" }} wordBreak="break-word" borderRadius="md" className="border border-gray-200 rounded p-4 space-y-3  dark:border-neutral-600/65">
+                <List.Root position="relative" bg={allChat ? "gray.700" : sender ? "blue.600" : "gray.700"} shadow="sm" mb={6} maxWidth={{ sm: "60%", md: "50%" }} wordBreak="break-word" borderRadius="md" className="border border-gray-200 rounded p-4 space-y-3  dark:border-neutral-600/65">
+                  {/* Menu Opsi (Edit & Hapus) */}
+                  {sender && (
+                    <Menu.Root>
+                      <Menu.Trigger asChild>
+                        <Button variant="outline" size="xs" position="absolute" top="-1" right="-1" aria-label="options">
+                          <BiDotsVerticalRounded />
+                        </Button>
+                      </Menu.Trigger>
+                      <Portal>
+                        <Menu.Positioner>
+                          <Menu.Content>
+                            <Menu.Item value="edit" onClick={() => handleEditClick(message)}>Edit</Menu.Item>
+                            <Menu.Item
+                              value="delete"
+                              color="fg.error"
+                              _hover={{ bg: "bg.error", color: "fg.error" }}
+                            >
+                              Delete
+                            </Menu.Item>
+                          </Menu.Content>
+                        </Menu.Positioner>
+                      </Portal>
+                    </Menu.Root>
+                  )}
                   <Text fontSize="sm" fontWeight="bold">
                     {isUser.name}
                     <Text as="span" fontWeight="normal" color="gray.300">
