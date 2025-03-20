@@ -17,14 +17,17 @@ interface SendMessageProps {
 
 const SendMessage: React.FC<SendMessageProps> = ({ session, currentUser, setMessages, editingMessageId, editingText, setEditingText }) => {
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
-  const newMessageRef = React.useRef<string>("");
   const typingTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const [localEditingText, setLocalEditingText] = React.useState(editingText);
   const broadcast = supabase.channel("typing-status");
 
-  const handleTyping = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  React.useEffect(() => {
+    setLocalEditingText(editingText);
+  }, [editingText]);
+
+  const handleTyping = () => {
     if (!inputRef.current || !currentUser) return;
 
-    inputRef.current.value = e.target.value;
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
@@ -76,7 +79,6 @@ const SendMessage: React.FC<SendMessageProps> = ({ session, currentUser, setMess
       };
 
       setMessages((prev) => [...prev, newMsg]); // Tambahkan pesan baru ke daftar
-      // newMessageRef.current = ""
       if (inputRef.current) inputRef.current.value = ""; // Kosongkan input setelah mengirim
     } catch (error) {
       console.error("Gagal mengirim pesan:", error);
@@ -84,7 +86,7 @@ const SendMessage: React.FC<SendMessageProps> = ({ session, currentUser, setMess
   }, [currentUser, setMessages]);
 
   const saveEditedMessage = () => {
-    setEditingText("");
+    setEditingText(localEditingText)
   };
 
   return (
@@ -92,11 +94,10 @@ const SendMessage: React.FC<SendMessageProps> = ({ session, currentUser, setMess
       {session && (
         <Container>
           <Flex gap="1" align="center">
-            <Textarea
+            {editingMessageId ? <Textarea
               autoresize
               ref={inputRef}
-              defaultValue={editingMessageId ? undefined : ""}
-              value={editingMessageId ? editingText : undefined}
+              value={(e) => setLocalEditingText(e.target.value)}
               p={2}
               size="sm"
               className="rounded"
@@ -104,12 +105,7 @@ const SendMessage: React.FC<SendMessageProps> = ({ session, currentUser, setMess
               css={{ "--focus-color": "lineHeights.moderate" }}
               placeholder={`Ketik pesan ${currentUser ? `ke ${currentUser.name}` : "ke Semua"}`}
               onChange={(e) => {
-                if (editingMessageId) {
-                  setEditingText(e.target.value);
-                } else {
-                  newMessageRef.current = e.target.value;
-                  handleTyping(e);
-                }
+                setEditingText(e.target.value);
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -121,8 +117,28 @@ const SendMessage: React.FC<SendMessageProps> = ({ session, currentUser, setMess
                   }
                 }
               }}
-            />
-
+            /> : <Textarea
+            autoresize
+            ref={inputRef}
+            p={2}
+            size="sm"
+            className="rounded"
+            variant="subtle"
+            css={{ "--focus-color": "lineHeights.moderate" }}
+            placeholder={`Ketik pesan ${currentUser ? `ke ${currentUser.name}` : "ke Semua"}`}
+            onChange={handleTyping}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                if (editingMessageId) {
+                  saveEditedMessage();
+                } else {
+                  sendMessage();
+                }
+              }
+            }}
+          /> }
+            
             <Button
               ml={2}
               px={3}

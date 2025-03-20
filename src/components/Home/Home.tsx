@@ -52,7 +52,6 @@ export default function Home() {
       const res = await fetch("/api/cache/messages")
       const data: Message[] = await res.json()
 
-
       setMessages(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) })));
     } catch (error) {
       console.error("Terjadi kesalahan", error)
@@ -181,9 +180,8 @@ export default function Home() {
   }, [session?.user]);
 
   const handleEditClick = (message: Message) => {
-
     setEditingMessageId(message.id);
-    setEditingText(message.text);
+    setEditingText(message.text)
   };
 
   const handleScroll = () => {
@@ -265,9 +263,10 @@ export default function Home() {
               session={session}
               currentUser={currentUser}
               setMessages={setMessages}
-              editingMessageId={editingMessageId}
               editingText={editingText}
-              setEditingText={setEditingText} />
+              setEditingText={setEditingText}
+              editingMessageId={editingMessageId}
+            />
           </Flex>
         </Flex>
       </Flex>
