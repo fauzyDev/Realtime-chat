@@ -9,6 +9,7 @@ import Chat from "@/components/Chat/Chat";
 import { FiLogOut } from "react-icons/fi";
 import { Button } from "../ui/button";
 import { Flex } from "@chakra-ui/react";
+import { getUsers, getMessages } from "@/libs/api";
 import { User, Message } from "@/libs/types";
 import { supabase } from "@/libs/supabase";
 import { useSession } from "next-auth/react";
@@ -20,7 +21,6 @@ export default function Home() {
   const [users, setUsers] = React.useState<User[]>([])
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [editingMessageId, setEditingMessageId] = React.useState<number | null>(null);
-  const [editingText, setEditingText] = React.useState("");
   const [currentUser, setCurrentUser] = React.useState<User | null>(null); // User yang sedang di-chat
   const [isSidebarOpen, setSidebarOpen] = React.useState<boolean>(false);
   const [isUserAtBottom, setIsUserAtBottom] = React.useState(true);
@@ -31,9 +31,7 @@ export default function Home() {
   // fetch users
   const fetchUsers = async () => {
     try {
-      const res = await fetch("/api/cache/users")
-      const data = await res.json()
-
+      const data = await getUsers()
       if (!Array.isArray(data)) {
         setUsers([]); // Hindari error dengan memberi default kosong
         return;
@@ -49,8 +47,7 @@ export default function Home() {
   // fetch messages
   const fetchMessages = async () => {
     try {
-      const res = await fetch("/api/cache/messages")
-      const data: Message[] = await res.json()
+      const data: Message[] = await getMessages()
 
       setMessages(data.map(msg => ({ ...msg, timestamp: new Date(msg.created_at) })));
     } catch (error) {
@@ -58,23 +55,23 @@ export default function Home() {
     }
   };
 
+  const updateStatusToOnline = async () => {
+    try {
+      if (!session?.user) return;
+
+      await fetch("/api/cache/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: session.user, status: "online" }),
+      })
+    } catch (error) {
+      console.error('Terjadi kesalahan', error);
+    }
+  };
+
   // Dengarkan perubahan data status user secara realtime
   React.useEffect(() => {
     // Mengupdate status user ke online saat login
-    const updateStatusToOnline = async () => {
-      try {
-        if (!session?.user) return;
-
-        await fetch("/api/cache/users", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: session.user, status: "online" }),
-        })
-      } catch (error) {
-        console.error('Terjadi kesalahan', error);
-      }
-    };
-
     fetchUsers()
     updateStatusToOnline()
 
@@ -87,6 +84,28 @@ export default function Home() {
           const updateUser = payload.new as User
           setUsers((prevUsers) => prevUsers.map((user) =>
             user.id === updateUser.id ? { ...user, status: updateUser.status } : user));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [session?.user]);
+
+  // Ambil pesan awal saat pertama kali aplikasi dibuka
+  React.useEffect(() => {
+    fetchMessages();
+
+    // Dengarkan perubahan data secara realtime
+    const channel = supabase
+      .channel("messages")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "messages" },
+        (payload) => {
+
+          setMessages((prevMessages) => [...prevMessages, payload.new as Message]);
         }
       )
       .subscribe();
@@ -157,31 +176,8 @@ export default function Home() {
     };
   }, [session?.user]);
 
-  // Ambil pesan awal saat pertama kali aplikasi dibuka
-  React.useEffect(() => {
-    fetchMessages();
-
-    // Dengarkan perubahan data secara realtime
-    const channel = supabase
-      .channel("messages")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "messages" },
-        (payload) => {
-
-          setMessages((prevMessages) => [...prevMessages, payload.new as Message]);
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [session?.user]);
-
   const handleEditClick = (message: Message) => {
     setEditingMessageId(message.id);
-    setEditingText(message.text)
   };
 
   const handleScroll = () => {
@@ -263,8 +259,7 @@ export default function Home() {
               session={session}
               currentUser={currentUser}
               setMessages={setMessages}
-              editingText={editingText}
-              setEditingText={setEditingText}
+              messages={messages}
               editingMessageId={editingMessageId}
             />
           </Flex>

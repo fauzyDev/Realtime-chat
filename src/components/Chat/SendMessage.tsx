@@ -1,29 +1,38 @@
-import React from 'react';
-import { Flex, Textarea, Container } from "@chakra-ui/react"
+import React from "react";
+import { Flex, Textarea, Container } from "@chakra-ui/react";
 import { Button } from "../ui/button";
 import { LuSendHorizontal } from "react-icons/lu";
-import { Session } from 'next-auth';
-import { supabase } from '@/libs/supabase';
-import { User, Message } from '@/libs/types';
+import { Session } from "next-auth";
+import { supabase } from "@/libs/supabase";
+import { User, Message } from "@/libs/types";
 
 interface SendMessageProps {
   session: Session | null;
   currentUser: User | null | undefined;
+  messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   editingMessageId: number | null;
-  editingText: string;
-  setEditingText: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const SendMessage: React.FC<SendMessageProps> = ({ session, currentUser, setMessages, editingMessageId, editingText, setEditingText }) => {
+const SendMessage: React.FC<SendMessageProps> = ({
+  session,
+  currentUser,
+  setMessages,
+  messages,
+  editingMessageId,
+}) => {
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
   const typingTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
-  const [localEditingText, setLocalEditingText] = React.useState(editingText);
+  const [editingText, setEditingText] = React.useState("");
+  const localTextRef = React.useRef<string>("");
   const broadcast = supabase.channel("typing-status");
 
   React.useEffect(() => {
-    setLocalEditingText(editingText);
-  }, [editingText]);
+    if (editingMessageId) {
+      const messageToEdit = messages.find((msg) => msg.id === editingMessageId);
+      setEditingText(messageToEdit ? messageToEdit.text : "");
+    }
+  }, [editingMessageId, messages]);
 
   const handleTyping = () => {
     if (!inputRef.current || !currentUser) return;
@@ -85,60 +94,70 @@ const SendMessage: React.FC<SendMessageProps> = ({ session, currentUser, setMess
     }
   }, [currentUser, setMessages]);
 
-  const saveEditedMessage = () => {
-    setEditingText(localEditingText)
+  const handleSaveEditMessage = () => {
+    setEditingText("");
   };
+
+  const handleInputChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      localTextRef.current = e.target.value;
+      setEditingText(e.target.value);
+    },
+    [setEditingText]
+  );
 
   return (
     <>
       {session && (
         <Container>
           <Flex gap="1" align="center">
-            {editingMessageId ? <Textarea
-              autoresize
-              ref={inputRef}
-              value={(e) => setLocalEditingText(e.target.value)}
-              p={2}
-              size="sm"
-              className="rounded"
-              variant="subtle"
-              css={{ "--focus-color": "lineHeights.moderate" }}
-              placeholder={`Ketik pesan ${currentUser ? `ke ${currentUser.name}` : "ke Semua"}`}
-              onChange={(e) => {
-                setEditingText(e.target.value);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  if (editingMessageId) {
-                    saveEditedMessage();
-                  } else {
-                    sendMessage();
+            {editingMessageId ? (
+              <Textarea
+                autoresize
+                ref={inputRef}
+                value={editingText}
+                p={2}
+                size="sm"
+                className="rounded"
+                variant="subtle"
+                css={{ "--focus-color": "lineHeights.moderate" }}
+                placeholder={`Ketik pesan ${currentUser ? `ke ${currentUser.name}` : "ke Semua"}`}
+                onChange={handleInputChange}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    if (editingMessageId) {
+                      handleSaveEditMessage();
+                    } else {
+                      sendMessage();
+                    }
                   }
-                }
-              }}
-            /> : <Textarea
-            autoresize
-            ref={inputRef}
-            p={2}
-            size="sm"
-            className="rounded"
-            variant="subtle"
-            css={{ "--focus-color": "lineHeights.moderate" }}
-            placeholder={`Ketik pesan ${currentUser ? `ke ${currentUser.name}` : "ke Semua"}`}
-            onChange={handleTyping}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                if (editingMessageId) {
-                  saveEditedMessage();
-                } else {
-                  sendMessage();
-                }
-              }
-            }}
-          /> }
-            
+                }}
+              />
+            ) : (
+              <Textarea
+                autoresize
+                ref={inputRef}
+                p={2}
+                size="sm"
+                className="rounded"
+                variant="subtle"
+                css={{ "--focus-color": "lineHeights.moderate" }}
+                placeholder={`Ketik pesan ${currentUser ? `ke ${currentUser.name}` : "ke Semua"}`}
+                onChange={handleTyping}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    if (editingMessageId) {
+                      handleSaveEditMessage();
+                    } else {
+                      sendMessage();
+                    }
+                  }
+                }}
+              />
+            )}
+
             <Button
               ml={2}
               px={3}
@@ -147,7 +166,8 @@ const SendMessage: React.FC<SendMessageProps> = ({ session, currentUser, setMess
               color="white"
               rounded="md"
               _hover={{ bg: "blue.600" }}
-              onClick={editingMessageId ? saveEditedMessage : sendMessage}>
+              onClick={editingMessageId ? handleSaveEditMessage : sendMessage}
+            >
               <LuSendHorizontal /> Send
             </Button>
           </Flex>
